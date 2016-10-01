@@ -1,0 +1,8 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+mkdir -p out
+cd src
+export CCACHE_HARDLINK=1
+ninja -C"${PWD}"

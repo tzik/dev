@@ -1,0 +1,14 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+if [ ! -e src ]; then
+  ./bin/checkout
+else
+  ./bin/sync
+fi
+
+# ./bin/clobber
+./bin/configure
+./bin/build
+# ./bin/install

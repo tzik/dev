@@ -1,0 +1,13 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+mkdir -p out/bin out/libexec
+cat > out/bin/d8 <<EOF
+#!/bin/bash
+exec "\$(dirname "\$0")/../libexec/d8" "\$@"
+EOF
+chmod a+x out/bin/d8
+
+cd v8/out/linux-release
+cp d8 lib*.so *.bin ../../../out/libexec

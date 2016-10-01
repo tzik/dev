@@ -1,0 +1,9 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+cd src
+shopt -s nullglob
+for i in *; do
+  (cd "$i"; git reset --hard; git pull --rebase)
+done

@@ -1,0 +1,7 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+mkdir -p out
+cd build
+ninja -C"${PWD}" install

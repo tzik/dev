@@ -1,0 +1,11 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+rm -rf out build
+cd src
+
+shopt -s nullglob
+for i in *; do
+  (cd "$i"; git clean -dffx)
+done

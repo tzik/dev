@@ -1,0 +1,11 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+declare -a repos
+repos+=(llvm clang lld clang-tools-extra)
+repos+=(compiler-rt libcxx libcxxabi libunwind)
+repos+=(polly lnt lldb)
+for i in "${repos[@]}"; do
+    git clone --depth=1 "http://llvm.org/git/${i}.git" "src/${i}"
+done

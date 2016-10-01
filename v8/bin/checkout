@@ -1,0 +1,5 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+export GYP_CHROMIUM_NO_ACTION=1
+gclient sync --gclientfile=v8.gclient --no-history

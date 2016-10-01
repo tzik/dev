@@ -1,0 +1,8 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+cd src
+export CCACHE_DIR="${PWD}/out/ccache"
+export CCACHE_HARDLINK=1
+ninja -C out/linux-release "$@"

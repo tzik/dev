@@ -1,0 +1,17 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+base_dir="${PWD}"
+out_dir="${base_dir}/out"
+
+export CC="ccache clang"
+export CXX="ccache clang++"
+
+cd src
+touch dev_mode_disabled
+sed -i 's:/usr/local/etc/asciidoc/:/usr/share/asciidoc/:g' dev.mk.in
+./autogen.sh
+
+declare -a opts
+opts+=("--prefix=${out_dir}")
+./configure "${opts[@]}"

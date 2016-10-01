@@ -1,0 +1,10 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+cd v8
+git reset --hard
+git pull --rebase
+
+export GYP_CHROMIUM_NO_ACTION=1
+gclient sync --gclientfile=v8.gclient --no-history

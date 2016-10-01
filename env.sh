@@ -1,0 +1,7 @@
+source "$(dirname "$0")/depot_tools/env.sh"
+source "$(dirname "$0")/ccache/env.sh"
+source "$(dirname "$0")/ninja/env.sh"
+source "$(dirname "$0")/cmake/env.sh"
+source "$(dirname "$0")/llvm/env.sh"
+source "$(dirname "$0")/v8/env.sh"
+source "$(dirname "$0")/binaryen/env.sh"

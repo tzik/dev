@@ -1,0 +1,9 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+rm -rf out
+cd v8
+git reset --hard
+git clean -df
+rm -rf out

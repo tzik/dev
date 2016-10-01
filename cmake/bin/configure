@@ -1,0 +1,16 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+base_dir="${PWD}"
+out_dir="${base_dir}/out"
+
+mkdir -p build
+cd build
+
+export CC="ccache clang"
+export CXX="ccache clang++"
+
+declare -a opts
+opts+=("-GNinja")
+opts+=("-DCMAKE_INSTALL_PREFIX=${out_dir}")
+cmake "${opts[@]}" ../src

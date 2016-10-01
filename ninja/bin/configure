@@ -1,0 +1,11 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+base_dir="${PWD}"
+out_dir="${base_dir}/out"
+
+export CC="ccache clang"
+export CXX="ccache clang++"
+
+cd src
+./configure.py

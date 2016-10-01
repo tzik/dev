@@ -1,0 +1,6 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+gclient sync --gclientfile=chromium.gclient --no-history
+cd src
+git config --add remote.origin.fetch '+refs/tags/*:refs/tags/*'

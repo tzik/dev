@@ -1,0 +1,9 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+mkdir -p out
+cd src
+export CCACHE_CPP2=1
+export CCACHE_HARDLINK=1
+make -C"${PWD}" -j"$(nproc)"

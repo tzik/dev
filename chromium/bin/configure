@@ -1,0 +1,18 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+base_dir="${PWD}"
+src_dir="${base_dir}/src"
+build_dir="${src_dir}/out/linux-release"
+
+clang_base_path="$(realpath "$(dirname "$(which clang)")/..")"
+
+declare -a opts
+opts+=("is_debug=false")
+opts+=("cc_wrapper=\"ccache\"")
+opts+=("clang_base_path=\"${clang_base_path}\"")
+opts+=("clang_use_chrome_plugins=false")
+opts+=("is_component_build=true")
+
+cd "${src_dir}"
+gn gen "${build_dir}" --args="${opts[*]}"
