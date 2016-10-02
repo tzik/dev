@@ -1,5 +1,7 @@
 
 chromium_dir="$(dirname "$0")"
+# abbrev_path[${chromium_dir}]="cr"
+
 crdev() {
   if [ "$#" -eq 0 ]; then
     cd "${chromium_dir}/src"
