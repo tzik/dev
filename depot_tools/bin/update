@@ -2,7 +2,7 @@
 set -ex
 cd "$(dirname "$0")/.."
 
-if [ ! -e src ]; then
+if [ ! -e depot_tools ]; then
   ./bin/checkout
 else
   ./bin/sync

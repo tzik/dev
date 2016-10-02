@@ -2,12 +2,13 @@
 set -ex
 cd "$(dirname "$0")/.."
 base_dir="${PWD}"
-src_dir="${base_dir}/src"
+src_dir="${base_dir}/v8"
 build_dir="${src_dir}/out/linux-release"
 
 clang_base_path="$(realpath "$(dirname "$(which clang)")/..")"
 
 declare -a opts
+# opts+=("is_debug=true")
 opts+=("is_debug=false")
 opts+=("cc_wrapper=\"ccache\"")
 opts+=("clang_base_path=\"${clang_base_path}\"")

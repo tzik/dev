@@ -1,1 +1,1 @@
-path=("$(dirname "$0")/src"(N) "${path[@]}")
+path=("$(dirname "$0")/depot_tools"(N) "${path[@]}")

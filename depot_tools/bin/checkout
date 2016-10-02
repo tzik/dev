@@ -1,4 +1,4 @@
 #!/bin/bash
 set -ex
 cd "$(dirname "$0")/.."
-git clone --depth=1 "https://chromium.googlesource.com/chromium/tools/depot_tools" src
+git clone --depth=1 "https://chromium.googlesource.com/chromium/tools/depot_tools.git" depot_tools
