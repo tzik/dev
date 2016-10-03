@@ -9,3 +9,5 @@ repos+=(polly lnt lldb)
 for i in "${repos[@]}"; do
     git clone --depth=1 "http://llvm.org/git/${i}.git" "src/${i}"
 done
+
+git clone --depth=1 'https://chromium.googlesource.com/chromium/src/tools/clang.git' src/chromium-tools

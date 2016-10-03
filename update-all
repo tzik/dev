@@ -1,0 +1,12 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")"
+
+./depot_tools/bin/update
+./ccache/bin/update
+./ninja/bin/update
+./cmake/bin/update
+./llvm/bin/update
+./v8/bin/update
+./binaryen/bin/update
+# ./chromium/bin/update

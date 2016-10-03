@@ -5,3 +5,4 @@ cd "$(dirname "$0")/.."
 mkdir -p out
 cd build
 ninja -C"${PWD}" install
+# ninja -C"${PWD}" cr-install

@@ -2,7 +2,7 @@
 set -ex
 cd "$(dirname "$0")/.."
 
-mkdir -p out
+mkdir -p out build
 cd build
 export CCACHE_HARDLINK=1
 ninja -C"${PWD}"
