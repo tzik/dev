@@ -24,8 +24,7 @@ opts+=("-DLIBCXX_CXX_ABI_INTREE=ON")
 
 opts+=("-DLLVM_EXTERNAL_PROJECTS=chromium-tools")
 
-for i in clang compiler-rt libcxx libcxxabi lld clang-tools-extra; do
-# for i in clang compiler-rt libcxx libcxxabi lld clang-tools-extra chromium-tools; do
+for i in clang compiler-rt libcxx libcxxabi lld clang-tools-extra chromium-tools; do
   upper="$(echo "$i" | tr '[:lower:]-' '[:upper:]_')"
   var_name="LLVM_EXTERNAL_${upper}_SOURCE_DIR"
   var_value="${src_dir}/$i"
@@ -38,16 +37,16 @@ opts+=("-DLIBCXX_CXX_ABI=libcxxabi")
 opts+=("-DLIBCXX_CXX_ABI_INCLUDE_PATHS=${src_dir}/libcxxabi/include")
 opts+=("-DLIBCXXABI_LIBCXX_INCLUDES=${src_dir}/libcxx/include")
 
-# declare -a chromium_tools
-# chromium_tools+=("base_bind_rewriters")
-# chromium_tools+=("plugins" "blink_gc_plugin")
+declare -a chromium_tools
+chromium_tools+=("base_bind_rewriters")
+chromium_tools+=("plugins" "blink_gc_plugin")
 
-# glue() {
-#     local IFS=";"
-#     echo "$*"
-# }
+glue() {
+    local IFS=";"
+    echo "$*"
+}
 
-# opts+=("-DCHROMIUM_TOOLS=$(glue "${chromium_tools[@]}")")
+opts+=("-DCHROMIUM_TOOLS=$(glue "${chromium_tools[@]}")")
 
 # opts+=("-DLLVM_POLLY_BUILD=ON")
 
