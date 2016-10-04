@@ -12,4 +12,4 @@ fi
 ./bin/configure
 ./bin/build
 ./bin/install
-./bin/update-lkgr
+./bin/mark-lkgr
