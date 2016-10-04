@@ -1,0 +1,18 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+lkgr="$(realpath etc/lkgr)"
+cd src
+
+shopt -s nullglob
+for i in *; do
+  cd "$i"
+  if [ -z "$(git rev-parse --show-prefix)" ]; then
+    rev="$(sed -n "s/ ${i}\$//p" "${lkgr}")"
+    if [ -n "${rev}" ]; then
+      git checkout "${rev}"
+    fi
+  fi
+  cd ".."
+done

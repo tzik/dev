@@ -1,0 +1,7 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+mkdir -p etc
+cd src
+git rev-parse HEAD > ../etc/lkgr

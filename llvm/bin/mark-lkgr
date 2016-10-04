@@ -1,0 +1,18 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+mkdir -p etc
+echo -n > etc/lkgr
+lkgr="$(realpath etc/lkgr)"
+
+cd src
+
+shopt -s nullglob
+for i in *; do
+  cd "$i"
+  if [ -z "$(git rev-parse --show-prefix)" ]; then
+    echo "$(git rev-parse HEAD) $i" >> "${lkgr}"
+  fi
+  cd ".."
+done
