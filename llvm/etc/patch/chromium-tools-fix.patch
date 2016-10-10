@@ -1,0 +1,30 @@
+diff --git a/blink_gc_plugin/BlinkGCPluginConsumer.cpp b/blink_gc_plugin/BlinkGCPluginConsumer.cpp
+index ba5ba4a..4326fd5 100644
+--- a/blink_gc_plugin/BlinkGCPluginConsumer.cpp
++++ b/blink_gc_plugin/BlinkGCPluginConsumer.cpp
+@@ -143,8 +143,8 @@ void BlinkGCPluginConsumer::ParseFunctionTemplates(TranslationUnitDecl* decl) {
+ 
+     // Force parsing and AST building of the yet-uninstantiated function
+     // template trace method bodies.
+-    clang::LateParsedTemplate* lpt = sema.LateParsedTemplateMap[fd];
+-    sema.LateTemplateParser(sema.OpaqueParser, *lpt);
++    sema.LateTemplateParser(sema.OpaqueParser,
++                            *sema.LateParsedTemplateMap[fd]);
+   }
+ }
+ 
+diff --git a/plugins/FindBadConstructsConsumer.cpp b/plugins/FindBadConstructsConsumer.cpp
+index 0fd85b1..0d02bf1 100644
+--- a/plugins/FindBadConstructsConsumer.cpp
++++ b/plugins/FindBadConstructsConsumer.cpp
+@@ -967,8 +967,8 @@ void FindBadConstructsConsumer::ParseFunctionTemplates(
+       continue;
+ 
+     // Parse and build AST for yet-uninstantiated template functions.
+-    clang::LateParsedTemplate* lpt = sema.LateParsedTemplateMap[fd];
+-    sema.LateTemplateParser(sema.OpaqueParser, *lpt);
++    sema.LateTemplateParser(sema.OpaqueParser,
++                            *sema.LateParsedTemplateMap[fd]);
+   }
+ }
+ 

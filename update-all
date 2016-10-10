@@ -1,12 +1,12 @@
-#!/bin/bash
+#!/bin/zsh
 set -ex
 cd "$(dirname "$0")"
 
-./depot_tools/bin/update
-./ccache/bin/update
-./ninja/bin/update
-./cmake/bin/update
-./llvm/bin/update
-./v8/bin/update
-./binaryen/bin/update
-# ./chromium/bin/update
+./depot_tools/bin/update && source ./depot_tools/env.sh
+./ccache/bin/update && source ./ccache/env.sh
+./ninja/bin/update && source ./ninja/env.sh
+./cmake/bin/update && source ./cmake/env.sh
+./llvm/bin/update && source ./llvm/env.sh
+./v8/bin/update && source ./v8/env.sh
+./binaryen/bin/update && source ./binaryen/env.sh
+# ./chromium/bin/update && source ./chromium/env.sh

@@ -4,4 +4,5 @@ cd "$(dirname "$0")/.."
 
 cd v8
 export CCACHE_HARDLINK=1
+export CCACHE_COMPILERCHECK=none
 ninja -C out/linux-release

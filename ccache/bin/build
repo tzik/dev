@@ -6,4 +6,5 @@ mkdir -p out
 cd src
 export CCACHE_CPP2=1
 export CCACHE_HARDLINK=1
+export CCACHE_COMPILERCHECK=none
 make -C"${PWD}" -j"$(nproc)"

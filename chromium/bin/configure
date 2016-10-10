@@ -11,7 +11,7 @@ declare -a opts
 opts+=("is_debug=false")
 opts+=("cc_wrapper=\"ccache\"")
 opts+=("clang_base_path=\"${clang_base_path}\"")
-opts+=("clang_use_chrome_plugins=false")
+opts+=("clang_use_chrome_plugins=true")
 opts+=("is_component_build=true")
 
 cd "${src_dir}"
