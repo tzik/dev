@@ -13,7 +13,5 @@ export CXX="clang++"
 declare -a opts
 opts+=("-GNinja")
 opts+=("-DCMAKE_INSTALL_PREFIX=${out_dir}")
-opts+=("-DCMAKE_BUILD_TYPE=Release")
-# opts+=("-DCMAKE_BUILD_TYPE=Debug")
-
+opts+=("-DBUILD_SHARED_LIBS=ON")
 cmake "${opts[@]}" ../src

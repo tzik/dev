@@ -1,0 +1,7 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+rm -rf out build
+cd src
+git clean -dffx

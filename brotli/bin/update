@@ -2,7 +2,7 @@
 set -ex
 cd "$(dirname "$0")/.."
 
-if [ ! -e v8 ]; then
+if [ ! -e src ]; then
   ./bin/checkout
 else
   ./bin/sync

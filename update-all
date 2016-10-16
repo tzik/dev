@@ -9,4 +9,5 @@ cd "$(dirname "$0")"
 ./llvm/bin/update && source ./llvm/env.sh
 ./v8/bin/update && source ./v8/env.sh
 ./binaryen/bin/update && source ./binaryen/env.sh
+./brotli/bin/update && source ./brotli/env.sh
 # ./chromium/bin/update && source ./chromium/env.sh

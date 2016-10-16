@@ -8,3 +8,5 @@ git pull --rebase
 
 export GYP_CHROMIUM_NO_ACTION=1
 gclient sync --gclientfile=v8.gclient --no-history
+
+patch -p1 < ../etc/patches/calloc_array_buffer.patch

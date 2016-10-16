@@ -7,6 +7,3 @@ shopt -s nullglob
 for i in *; do
   (cd "$i"; git reset --hard; git pull --rebase)
 done
-
-cd chromium-tools
-patch -p1 < ../../etc/patch/chromium-tools-fix.patch
