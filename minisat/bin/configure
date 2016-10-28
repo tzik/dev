@@ -7,8 +7,8 @@ out_dir="${base_dir}/out"
 mkdir -p build
 cd build
 
-export CC="ccache clang"
-export CXX="ccache clang++"
+export CC="clang"
+export CXX="clang++"
 
 declare -a opts
 opts+=("-GNinja")

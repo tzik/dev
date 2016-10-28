@@ -1,0 +1,9 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+mkdir -p out
+cd build
+export CCACHE_HARDLINK=1
+export CCACHE_COMPILERCHECK=none
+ninja -C"${PWD}"

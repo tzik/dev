@@ -10,4 +10,5 @@ cd "$(dirname "$0")"
 ./v8/bin/update && source ./v8/env.sh
 ./binaryen/bin/update && source ./binaryen/env.sh
 ./brotli/bin/update && source ./brotli/env.sh
+./minisat/bin/update && source ./minisat/env.sh
 # ./chromium/bin/update && source ./chromium/env.sh

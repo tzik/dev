@@ -1,0 +1,21 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+mkdir -p out
+cd build
+ninja -C"${PWD}" install
+
+cd ..
+mkdir -p out/pkgconfig
+cat > out/pkgconfig/minisat.pc <<EOF
+prefix="${PWD}/out"
+libdir="\${prefix}/lib"
+includedir="\${prefix}/include"
+
+Name: Minisat
+Version: 2.2
+Description:
+Libs: -L\${libdir} -lminisat
+Cflags: -I\${includedir}
+EOF
