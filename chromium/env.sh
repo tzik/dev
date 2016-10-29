@@ -1,8 +1,8 @@
 
-chromium_dir="$(realpath "$(dirname "$0")")"
+chromium_dir="$(realpath "$(dirname "${BASH_SOURCE:-$0}")")"
 # abbrev_path[${chromium_dir}]="cr"
 
-export CHROMIUM_BUILDTOOLS_PATH="$(realpath "$(dirname "$0")")/src/buildtools"
+export CHROMIUM_BUILDTOOLS_PATH="${chromium_dir}/src/buildtools"
 
 crdev() {
   if [ "$#" -eq 0 ]; then

@@ -1,1 +1,2 @@
-path=("$(realpath "$(dirname "$0")")/out/bin"(N) "${path[@]}")
+base_dir="$(realpath "$(dirname "${BASH_SOURCE:-$0}")")"
+path=("${base_dir}/out/bin"(N) "${path[@]}")

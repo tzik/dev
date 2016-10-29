@@ -1,3 +1,9 @@
+declare -aU path
+declare -aTUx PKG_CONFIG_PATH pkg_config_path ":"
+declare -aTUx C_INCLUDE_PATH c_include_path ":"
+declare -aTUx CPLUS_INCLUDE_PATH cplus_include_path ":"
+declare -aTUx LD_RUN_PATH ld_run_path ":"
+
 source "$(dirname "$0")/depot_tools/env.sh"
 source "$(dirname "$0")/ccache/env.sh"
 source "$(dirname "$0")/ninja/env.sh"
