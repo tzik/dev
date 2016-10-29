@@ -1,0 +1,7 @@
+/build/
+/out/
+/src/compiler-rt/
+/src/musl/
+/src/libunwind/
+/src/libcxxabi/
+/src/libcxx/

@@ -1,0 +1,6 @@
+#!/bin/zsh
+
+./build-musl
+./build-compiler-rt
+./build-libcxxabi
+./build-libcxx

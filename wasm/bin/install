@@ -1,0 +1,16 @@
+#!/bin/bash
+set -ex
+cd "$(dirname "$0")/.."
+
+mkdir -p out/{lib,include}
+cp build/*.ll out/lib
+
+cp -r build/musl/include/* out/include
+cp -r src/musl/include/* out/include
+cp -r src/musl/arch/generic/* out/include
+cp -r src/arch/wasm32/* out/include
+
+cp -r src/libunwind/include/* out/include
+cp -r src/compiler-rt/include/* out/include
+cp -r src/libcxxabi/include/* out/include
+cp -r src/libcxx/include/* out/include

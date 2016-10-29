@@ -1,0 +1,37 @@
+#!/bin/zsh
+set -e
+cd "$(dirname "$0")/.."
+
+declare -a cflags
+cflags+=("-nostdinc" "-nostdinc++" "-std=c++11")
+cflags+=("-target" "wasm32" "-S" "-emit-llvm" "-O3")
+cflags+=("-Isrc/arch/wasm32" "-Isrc/musl/arch/generic")
+cflags+=("-Ibuild/musl/src/internal" "-Isrc/musl/src/internal")
+cflags+=("-Ibuild/musl/include" "-isystem" "src/musl/include")
+cflags+=("-Isrc/libunwind/include")
+cflags+=("-Isrc/libcxxabi/include")
+cflags+=("-Isrc/libcxx/include")
+cflags+=("-D_XOPEN_SOURCE=700")
+cflags+=("-D_LIBCPP_HAS_NO_THREADS")
+cflags+=("-D_LIBCXXABI_HAS_NO_THREADS")
+cflags+=("-D__CLANG_MAX_ALIGN_T_DEFINED")
+
+declare -a objs
+for i in src/libcxxabi/src/*.cpp; do
+  case "$i" in
+    src/libcxxabi/src/cxa_thread_atexit.cpp)
+      continue
+      ;;
+    src/libcxxabi/src/cxa_exception.cpp)
+      continue
+      ;;
+  esac
+
+  name="${i#src/libcxxabi/src/}"
+  obj="build/libcxxabi/${name%.cpp}.ll"
+  objs+=("${obj}")
+  mkdir -p "$(dirname ${obj})"
+  clang++ "${cflags[@]}" -o "${obj}" "$i"
+done
+
+llvm-link -S -o build/libcxxabi.ll "${objs[@]}"

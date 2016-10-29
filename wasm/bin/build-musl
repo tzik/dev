@@ -1,0 +1,42 @@
+#!/bin/zsh
+set -e
+cd "$(dirname "$0")/.."
+
+declare -a cflags
+cflags+=("-nostdinc" "-std=c99")
+cflags+=("-target" "wasm32" "-S" "-emit-llvm" "-O3")
+cflags+=("-Isrc/arch/wasm32" "-Isrc/musl/arch/generic")
+cflags+=("-Ibuild/musl/src/internal" "-Isrc/musl/src/internal")
+cflags+=("-Ibuild/musl/include" "-Isrc/musl/include")
+cflags+=("-D_XOPEN_SOURCE=700")
+
+mkdir -p build/musl/{,src/internal,include/bits}
+
+printf '#define VERSION "%s"\n' "$(cat src/musl/VERSION)" \
+  > build/musl/src/internal/version.h
+
+sed -f src/musl/tools/mkalltypes.sed \
+  src/arch/wasm32/bits/alltypes.h.in \
+  src/musl/include/alltypes.h.in \
+  > build/musl/include/bits/alltypes.h
+
+cp src/arch/wasm32/bits/syscall.h.in build/musl/include/bits/syscall.h
+sed -n -e s/__NR_/SYS_/p < src/arch/wasm32/bits/syscall.h.in \
+  >> build/musl/include/bits/syscall.h
+
+declare -a objs
+for i in src/musl/src/*/*.c; do
+  case "$i" in
+    src/musl/src/thread/*)
+      continue
+      ;;
+  esac
+
+  name="${i#src/musl/src/}"
+  obj="build/musl/${name%.c}.ll"
+  objs+=("${obj}")
+  mkdir -p "$(dirname ${obj})"
+  clang "${cflags[@]}" -o "${obj}" "$i"
+done
+
+llvm-link -S -o build/musl.ll "${objs[@]}"

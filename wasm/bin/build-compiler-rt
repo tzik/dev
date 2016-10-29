@@ -1,0 +1,23 @@
+#!/bin/zsh
+set -e
+cd "$(dirname "$0")/.."
+
+declare -a cflags
+cflags+=("-nostdinc" "-std=c99")
+cflags+=("-nostdinc" "-O3" "-target" "wasm32" "-S" "-emit-llvm")
+
+cflags+=("-Isrc/arch/wasm32" "-Isrc/musl/arch/generic")
+cflags+=("-Ibuild/musl/src/internal" "-Isrc/musl/src/internal")
+cflags+=("-Ibuild/musl/include" "-Isrc/musl/include")
+cflags+=("-Isrc/libunwind/include" "-D_STANDALONE" "-D_XOPEN_SOURCE=700")
+
+mkdir -p build/compiler-rt/builtins
+declare -a objs
+for i in src/compiler-rt/lib/builtins/*.c; do
+  basename="$(basename "$i")"
+  obj="build/compiler-rt/builtins/${basename%.c}.ll"
+  objs+=("${obj}")
+  clang "${cflags[@]}" -o "${obj}" "$i"
+done
+
+llvm-link -S -o build/compiler-rt.ll "${objs[@]}"
