@@ -6,4 +6,4 @@ cd src
 export CCACHE_DIR="${PWD}/out/ccache"
 export CCACHE_HARDLINK=1
 export CCACHE_COMPILERCHECK=none
-ninja -C out/linux-release "$@"
+time ninja -C out/linux-release "$@"

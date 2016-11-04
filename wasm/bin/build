@@ -1,6 +1,8 @@
 #!/bin/zsh
+set -e
+cd "$(dirname "$0")/.."
 
-./build-musl
-./build-compiler-rt
-./build-libcxxabi
-./build-libcxx
+./bin/build-musl
+./bin/build-compiler-rt
+./bin/build-libcxxabi
+./bin/build-libcxx
