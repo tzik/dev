@@ -1,9 +1,9 @@
 #!/bin/bash
-set -ex
+set -e
 cd "$(dirname "$0")/.."
 
 mkdir -p out/{lib,include}
-cp build/*.ll out/lib
+cp build/wasm.ll out/lib
 
 cp -r build/musl/include/* out/include
 cp -r src/musl/include/* out/include

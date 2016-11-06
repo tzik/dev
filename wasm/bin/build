@@ -6,3 +6,9 @@ cd "$(dirname "$0")/.."
 ./bin/build-compiler-rt
 ./bin/build-libcxxabi
 ./bin/build-libcxx
+
+llvm-link -S -o build/wasm.ll \
+  build/compiler-rt.ll \
+  build/musl.ll \
+  build/libcxxabi.ll \
+  build/libcxx.ll

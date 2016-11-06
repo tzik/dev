@@ -9,6 +9,11 @@ cflags+=("-Isrc/arch/wasm32" "-Isrc/musl/arch/generic")
 cflags+=("-Ibuild/musl/src/internal" "-Isrc/musl/src/internal")
 cflags+=("-Ibuild/musl/include" "-Isrc/musl/include")
 cflags+=("-D_XOPEN_SOURCE=700")
+cflags+=("-Wno-dangling-else")
+cflags+=("-Wno-bitwise-op-parentheses")
+cflags+=("-Wno-logical-op-parentheses")
+cflags+=("-Wno-shift-op-parentheses")
+cflags+=("-Wno-string-plus-int")
 
 mkdir -p build/musl/{,src/internal,include/bits}
 

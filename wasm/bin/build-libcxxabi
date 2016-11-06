@@ -25,6 +25,15 @@ for i in src/libcxxabi/src/*.cpp; do
     src/libcxxabi/src/cxa_exception.cpp)
       continue
       ;;
+    src/libcxxabi/src/cxa_default_handlers.cpp)
+      continue
+      ;;
+    src/libcxxabi/src/cxa_handlers.cpp)
+      continue
+      ;;
+    src/libcxxabi/src/stdexcept.cpp)
+      continue
+      ;;
   esac
 
   name="${i#src/libcxxabi/src/}"

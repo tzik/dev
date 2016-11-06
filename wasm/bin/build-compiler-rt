@@ -1,5 +1,5 @@
 #!/bin/zsh
-set -ex
+set -e
 cd "$(dirname "$0")/.."
 
 declare -a cflags
@@ -11,19 +11,18 @@ cflags+=("-Ibuild/musl/src/internal" "-Isrc/musl/src/internal")
 cflags+=("-Ibuild/musl/include" "-Isrc/musl/include")
 cflags+=("-Isrc/libunwind/include" "-D_STANDALONE" "-D_XOPEN_SOURCE=700")
 
-cflags+=("-D__sync_add_and_fetch(x,y)=(*(x)+=(y))")
-cflags+=("-D__c11_atomic_load=atomic_load_repl")
-cflags+=("-D__c11_atomic_store=atomic_store_repl")
-cflags+=("-D__c11_atomic_fetch_add=atomic_fetch_add_repl")
-cflags+=("-D__c11_atomic_fetch_sub=atomic_fetch_sub_repl")
-cflags+=("-D__c11_atomic_fetch_and=atomic_fetch_and_repl")
-cflags+=("-D__c11_atomic_fetch_or=atomic_fetch_or_repl")
-cflags+=("-D__c11_atomic_fetch_xor=atomic_fetch_xor_repl")
-cflags+=("-D_Atomic(x)=x")
-
 mkdir -p build/compiler-rt/builtins
 declare -a objs
 for i in src/compiler-rt/lib/builtins/*.c; do
+  case "$i" in
+    src/compiler-rt/lib/builtins/atomic.c)
+      continue
+      ;;
+    src/compiler-rt/lib/builtins/emutls.c)
+      continue
+      ;;
+  esac
+  
   basename="$(basename "$i")"
   obj="build/compiler-rt/builtins/${basename%.c}.ll"
   objs+=("${obj}")

@@ -17,14 +17,17 @@ cflags+=("-D_LIBCXXABI_HAS_NO_THREADS")
 cflags+=("-D__CLANG_MAX_ALIGN_T_DEFINED")
 cflags+=("-D_LIBCPP_HAS_MUSL_LIBC")
 cflags+=("-DLIBCXX_BUILDING_LIBCXXABI")
+cflags+=("-fno-threadsafe-statics")
 
 cflags+=("-D__sync_add_and_fetch(x,y)=(*(x)+=(y))")
-cflags+=("-D__c11_atomic_load(x,y)=(*(x))")
 
 declare -a objs
 for i in src/libcxx/src/*.cpp; do
-  # case "$i" in
-  # esac
+  case "$i" in
+    src/libcxx/src/locale.cpp)
+      continue
+      ;;
+  esac
 
   name="${i#src/libcxx/src/}"
   obj="build/libcxx/${name%.cpp}.ll"
