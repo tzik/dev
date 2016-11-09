@@ -2,7 +2,7 @@
 set -e
 cd "$(dirname "$0")/.."
 
-mkdir -p out/{lib,include}
+mkdir -p out/{lib,include{,/c++/v1}}
 cp build/wasm.ll out/lib
 
 cp -r build/musl/include/* out/include
@@ -12,5 +12,5 @@ cp -r src/arch/wasm32/* out/include
 
 cp -r src/libunwind/include/* out/include
 cp -r src/compiler-rt/include/* out/include
-cp -r src/libcxxabi/include/* out/include
-cp -r src/libcxx/include/* out/include
+cp -r src/libcxxabi/include/* out/include/c++/v1
+cp -r src/libcxx/include/* out/include/c++/v1

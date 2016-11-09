@@ -16,22 +16,18 @@ cflags+=("-D_LIBCPP_HAS_NO_THREADS")
 cflags+=("-D_LIBCXXABI_HAS_NO_THREADS")
 cflags+=("-D__CLANG_MAX_ALIGN_T_DEFINED")
 
+cflags+=("-D__sync_add_and_fetch(x,y)=(*(x)+=(y))")
+cflags+=("-D__sync_sub_and_fetch(x,y)=(*(x)-=(y))")
+cflags+=("-D__sync_fetch_and_add(x,y)=({auto t=*(x);*(unsigned long*)(x)+=(unsigned long)(y);t;})")
+cflags+=("-D__atomic_exchange_n(x,y,a)=({auto t=*(x);*(x)=(y);t;})")
+
 declare -a objs
 for i in src/libcxxabi/src/*.cpp; do
   case "$i" in
     src/libcxxabi/src/cxa_thread_atexit.cpp)
       continue
       ;;
-    src/libcxxabi/src/cxa_exception.cpp)
-      continue
-      ;;
-    src/libcxxabi/src/cxa_default_handlers.cpp)
-      continue
-      ;;
-    src/libcxxabi/src/cxa_handlers.cpp)
-      continue
-      ;;
-    src/libcxxabi/src/stdexcept.cpp)
+    src/libcxxabi/src/cxa_noexception.cpp)
       continue
       ;;
   esac

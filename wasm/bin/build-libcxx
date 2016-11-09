@@ -23,12 +23,6 @@ cflags+=("-D__sync_add_and_fetch(x,y)=(*(x)+=(y))")
 
 declare -a objs
 for i in src/libcxx/src/*.cpp; do
-  case "$i" in
-    src/libcxx/src/locale.cpp)
-      continue
-      ;;
-  esac
-
   name="${i#src/libcxx/src/}"
   obj="build/libcxx/${name%.cpp}.ll"
   objs+=("${obj}")

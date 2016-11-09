@@ -14,7 +14,7 @@ opts+=("clang_base_path=\"${clang_base_path}\"")
 opts+=("clang_use_chrome_plugins=true")
 opts+=("is_component_build=true")
 opts+=("dcheck_always_on=true")
-opts+=("enable_nocompile_tests=true")
+# opts+=("enable_nocompile_tests=true")
 
 cd "${src_dir}"
 gn gen "${build_dir}" --args="${opts[*]}"

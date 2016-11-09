@@ -5,13 +5,14 @@ base_dir="${PWD}"
 out_dir="${base_dir}/out"
 src_dir="${base_dir}/src"
 llvm_dir="${src_dir}/llvm"
+: "${build_type:=Release}"
 build_dir="${base_dir}/build"
 
 declare -a opts
 opts+=("-GNinja" "-Wno-dev")
 
 opts+=("-DCMAKE_INSTALL_PREFIX=${out_dir}")
-opts+=("-DCMAKE_BUILD_TYPE=Release")
+opts+=("-DCMAKE_BUILD_TYPE=${build_type}")
 opts+=("-DCMAKE_C_COMPILER=clang")
 opts+=("-DCMAKE_CXX_COMPILER=clang++")
 

@@ -32,7 +32,7 @@ sed -n -e s/__NR_/SYS_/p < src/arch/wasm32/bits/syscall.h.in \
 declare -a objs
 for i in src/musl/src/*/*.c; do
   case "$i" in
-    src/musl/src/thread/*)
+    src/musl/src/thread/__unmapself.c)
       continue
       ;;
   esac
