@@ -1,0 +1,4 @@
+#!/bin/bash
+source "$(dirname "$0")/package.sh"
+
+mkdir -p "${out_dir}" "${build_dir}" "${image_dir}"

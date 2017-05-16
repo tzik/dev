@@ -1,0 +1,44 @@
+[submodule "pkg/llvm/src/llvm"]
+	path = pkg/llvm/src/llvm
+	url = https://llvm.googlesource.com//llvm.git
+	branch = master
+[submodule "pkg/llvm/src/clang"]
+	path = pkg/llvm/src/clang
+	url = https://llvm.googlesource.com//clang.git
+	branch = master
+[submodule "pkg/llvm/src/clang-tools-extra"]
+	path = pkg/llvm/src/clang-tools-extra
+	url = https://llvm.googlesource.com//clang-tools-extra.git
+	branch = master
+[submodule "pkg/llvm/src/compiler-rt"]
+	path = pkg/llvm/src/compiler-rt
+	url = https://llvm.googlesource.com//compiler-rt.git
+	branch = master
+[submodule "pkg/llvm/src/libcxxabi"]
+	path = pkg/llvm/src/libcxxabi
+	url = https://llvm.googlesource.com//libcxxabi.git
+	branch = master
+[submodule "pkg/llvm/src/libcxx"]
+	path = pkg/llvm/src/libcxx
+	url = https://llvm.googlesource.com//libcxx.git
+	branch = master
+[submodule "pkg/llvm/src/libunwind"]
+	path = pkg/llvm/src/libunwind
+	url = https://llvm.googlesource.com//libunwind.git
+	branch = master
+[submodule "pkg/llvm/src/lld"]
+	path = pkg/llvm/src/lld
+	url = https://llvm.googlesource.com//lld.git
+	branch = master
+[submodule "pkg/llvm/src/lldb"]
+	path = pkg/llvm/src/lldb
+	url = https://llvm.googlesource.com//lldb.git
+	branch = master
+[submodule "pkg/llvm/src/polly"]
+	path = pkg/llvm/src/polly
+	url = https://llvm.googlesource.com//polly.git
+	branch = master
+[submodule "pkg/llvm/src/chromium-tools"]
+	path = pkg/llvm/src/chromium-tools
+	url = https://chromium.googlesource.com/chromium/src/tools/clang.git
+	branch = master

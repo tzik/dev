@@ -1,0 +1,23 @@
+#!/bin/bash
+source "$(dirname "$0")/package.sh"
+
+cd "${build_dir}"
+
+declare -a flags
+flags+=(
+  "-GNinja"
+  "-DCMAKE_BUILD_TYPE=Release"
+  "-DCMAKE_INSTALL_PREFIX=${prefix}"
+  "-DBUILD_SHARED_LIBS=ON"
+
+  "-DLLVM_TARGETS_TO_BUILD=X86;ARM;AArch64"
+  "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly"
+  "-DLLVM_HOST_TRIPLE=x86_64-pc-linux-gnu"
+  "-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-pc-linux-gnu"
+
+  "-DLLVM_CCACHE_BUILD=ON"
+  "-DLLVM_CCACHE_DIR=${ccache_dir}"
+  "-DLLVM_CCACHE_SIZE=10G"
+)
+
+cmake "${flags[@]}" "${llvm_dir}"

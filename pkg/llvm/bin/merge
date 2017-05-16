@@ -1,0 +1,5 @@
+#!/bin/bash
+source "$(dirname "$0")/package.sh"
+
+mkdir -p "${prefix}"
+tar xf "${package_file}" -C "${prefix}"

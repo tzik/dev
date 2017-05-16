@@ -1,0 +1,11 @@
+#!/bin/bash
+source "$(dirname "$0")/package.sh"
+
+DESTDIR="${image_dir}" ninja -C "${build_dir}" install/strip
+
+mkdir -p "${image_dir}${prefix}" "$(dirname "${image_dir}${metadata_file}")"
+cd "${image_dir}${prefix}"
+find . -depth -printf '%p\0' > "${image_dir}${metadata_file}"
+
+tar cf "${package_file}" -C "${image_dir}${prefix}" \
+  --null -T "${image_dir}${metadata_file}"
