@@ -1,5 +1,6 @@
-/llvm.tar
-/image
 /build
-/out
 /ccache
+/image
+/llvm.tar
+/log
+/out

@@ -1,0 +1,8 @@
+#!/bin/bash
+source "$(dirname "$0")/package.sh"
+
+dest_dir="${image_dir}${prefix}/bin"
+mkdir -p "${dest_dir}"
+cp "${src_dir}/ninja" "${dest_dir}"
+
+source "${toolchain_dir}/lib/pack.sh"

@@ -1,17 +1,17 @@
 #!/bin/bash
 source "$(dirname "$0")/package.sh"
+cmake_dir="${src_dir}/llvm"
 
 cd "${build_dir}"
+
+: "${bootstrap:=}"
 
 declare -a flags
 flags+=(
   "-GNinja"
   "-DCMAKE_BUILD_TYPE=Release"
   "-DCMAKE_INSTALL_PREFIX=${prefix}"
-  "-DBUILD_SHARED_LIBS=ON"
 
-  "-DLLVM_TARGETS_TO_BUILD=X86;ARM;AArch64"
-  "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly"
   "-DLLVM_HOST_TRIPLE=x86_64-pc-linux-gnu"
   "-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-pc-linux-gnu"
 
@@ -20,4 +20,72 @@ flags+=(
   "-DLLVM_CCACHE_SIZE=10G"
 )
 
-cmake "${flags[@]}" "${llvm_dir}"
+if [ -n "${bootstrap}" ]; then
+  flags+=(
+    "-DLLVM_TOOL_LLDB_BUILD=OFF"
+    "-DLLVM_TOOL_LLD_BUILD=OFF"
+    "-DLLVM_TOOL_CLANG_TOOLS_EXTRA_BUILD=OFF"
+
+    "-DLLVM_TARGETS_TO_BUILD=X86"
+    "-DBUILD_SHARED_LIBS=OFF"
+  )
+  tools=(
+    clang
+  )
+
+else
+  flags+=(
+    "-DCMAKE_C_COMPILER=${prefix}/bin/cc"
+    "-DCMAKE_CXX_COMPILER=${prefix}/bin/c++"
+
+    "-DLLVM_TARGETS_TO_BUILD=X86;ARM;AArch64"
+    "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly"
+    "-DBUILD_SHARED_LIBS=ON"
+  )
+
+  tools=(
+    compiler-rt
+    libcxxabi
+    libcxx
+    libunwind
+
+    clang
+    lld
+    lldb
+    clang-tools-extra
+    polly
+    chromium-tools
+  )
+
+  flags+=(
+    "-DLIBCXX_CXX_ABI=libcxxabi"
+    "-DLIBCXX_CXX_ABI_INCLUDE_PATHS=${src_dir}/libcxxabi/include"
+    "-DLIBCXX_CXX_ABI_INTREE=ON"
+    "-DLIBCXXABI_LIBCXX_INCLUDES=${src_dir}/libcxx/include"
+
+    "-DCLANG_DEFAULT_LINKER=lld"
+    "-DCLANG_DEFAULT_CXX_STDLIB=libc++"
+    "-DCLANG_DEFAULT_RTLIB=compiler-rt"
+
+    "-DLIBCXXABI_USE_LLVM_UNWINDER=ON"
+    "-DLIBCXXABI_LIBUNWIND_PATH=${src_dir}/libunwind"
+    "-DLIBCXXABI_USE_COMPILER_RT=ON"
+
+    "-DLLVM_POLLY_BUILD=ON"
+    "-DLLVM_EXTERNAL_PROJECTS=chromium-tools"
+    "-DCHROMIUM_TOOLS=base_bind_rewriters;plugins"
+  )
+fi
+
+for i in "${tools[@]}"; do
+  upper="$(echo "$i" | tr '[:lower:]-' '[:upper:]_')"
+  var_name="LLVM_EXTERNAL_${upper}_SOURCE_DIR"
+  var_value="${src_dir}/$i"
+  flags+=(
+    "-D${var_name}=${var_value}"
+    "-DLLVM_TOOL_${upper}_BUILD=ON"
+  )
+done
+
+cmake_dir="${src_dir}/llvm"
+cmake "${flags[@]}" "${cmake_dir}"

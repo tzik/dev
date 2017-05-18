@@ -42,3 +42,19 @@
 	path = pkg/llvm/src/chromium-tools
 	url = https://chromium.googlesource.com/chromium/src/tools/clang.git
 	branch = master
+[submodule "pkg/glibc/src"]
+	path = pkg/glibc/src
+	url = git://sourceware.org/git/glibc.git
+	branch = master
+[submodule "pkg/binutils/src"]
+	path = pkg/binutils/src
+	url = git://sourceware.org/git/binutils-gdb.git
+	branch = master
+[submodule "pkg/cmake/src"]
+	path = pkg/cmake/src
+	url = https://gitlab.kitware.com/cmake/cmake.git
+	branch = master
+[submodule "pkg/ninja/src"]
+	path = pkg/ninja/src
+	url = https://github.com/ninja-build/ninja.git
+	branch = master

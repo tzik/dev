@@ -1,11 +1,20 @@
 #!/bin/bash
 source "$(dirname "$0")/package.sh"
+source "${toolchain_dir}/lib/install-cmake.sh"
 
-DESTDIR="${image_dir}" ninja -C "${build_dir}" install/strip
+bin_dir="${image_dir}${prefix}/bin"
+cat > "${bin_dir}/cc" <<EOF
+#!/bin/bash
+lib_dir="${prefix}/lib"
+exec "${prefix}/bin/clang" -Wno-unused-command-line-argument "\$@" -L\${lib_dir} -Wl,--rpath="\${lib_dir}"
+EOF
+chmod a+x "${bin_dir}/cc"
 
-mkdir -p "${image_dir}${prefix}" "$(dirname "${image_dir}${metadata_file}")"
-cd "${image_dir}${prefix}"
-find . -depth -printf '%p\0' > "${image_dir}${metadata_file}"
+cat > "${bin_dir}/c++" <<EOF
+#!/bin/bash
+lib_dir="${prefix}/lib"
+exec "${prefix}/bin/clang++" -Wno-unused-command-line-argument "\$@" -L\${lib_dir} -Wl,--rpath="\${lib_dir}"
+EOF
+chmod a+x "${bin_dir}/c++"
 
-tar cf "${package_file}" -C "${image_dir}${prefix}" \
-  --null -T "${image_dir}${metadata_file}"
+source "${toolchain_dir}/lib/pack.sh"
