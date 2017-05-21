@@ -58,3 +58,7 @@
 	path = pkg/ninja/src
 	url = https://github.com/ninja-build/ninja.git
 	branch = master
+[submodule "pkg/ccache/src"]
+	path = pkg/ccache/src
+	url = https://github.com/ccache/ccache.git
+	branch = master
