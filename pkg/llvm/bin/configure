@@ -14,10 +14,6 @@ flags+=(
 
   "-DLLVM_HOST_TRIPLE=x86_64-pc-linux-gnu"
   "-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-pc-linux-gnu"
-
-  "-DLLVM_CCACHE_BUILD=ON"
-  "-DLLVM_CCACHE_DIR=${ccache_dir}"
-  "-DLLVM_CCACHE_SIZE=10G"
 )
 
 if [ -n "${bootstrap}" ]; then
