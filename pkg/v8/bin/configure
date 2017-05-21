@@ -1,0 +1,15 @@
+#!/bin/bash
+source "$(dirname "$0")/package.sh"
+
+cd "${src_dir}"
+
+declare -a flags
+flags+=(
+  "is_component_build=true"
+  "is_debug=false"
+  "use_sysroot=false"
+  "clang_base_path=\"${prefix}\""
+  "gcc_target_rpath=\"${prefix}/lib:\\\$ORIGIN\""
+)
+
+gn gen "${build_dir}" --args="${flags[*]}"

@@ -1,2 +1,2 @@
 
-make -j"$(nproc)" -C"${build_dir}"
+make -j"$(nproc)" -C"${build_dir}" "$@"

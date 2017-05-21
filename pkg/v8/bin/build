@@ -1,0 +1,3 @@
+#!/bin/bash
+source "$(dirname "$0")/package.sh"
+source "${toolchain_dir}/lib/build-ninja.sh" "d8"

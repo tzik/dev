@@ -70,3 +70,11 @@
 	path = pkg/binaryen/src
 	url = https://github.com/WebAssembly/binaryen.git
 	branch = master
+[submodule "pkg/v8/v8"]
+	path = pkg/v8/v8
+	url = https://chromium.googlesource.com/v8/v8
+	branch = master
+[submodule "pkg/depot_tools"]
+	path = pkg/depot_tools
+	url = https://chromium.googlesource.com/chromium/tools/depot_tools.git
+	branch = master

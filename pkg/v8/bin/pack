@@ -1,0 +1,32 @@
+#!/bin/bash
+source "$(dirname "$0")/package.sh"
+
+cd "${build_dir}"
+
+strip \
+  "d8" \
+  "libv8.so" \
+  "libicuuc.so" \
+  "libicui18n.so" \
+  "libv8_libbase.so" \
+  "libv8_libplatform.so"
+
+mkdir -p "${image_dir}${prefix}/libexec"
+cp -t "${image_dir}${prefix}/libexec" \
+  "d8" \
+  "libv8.so" \
+  "libicuuc.so" \
+  "libicui18n.so" \
+  "libv8_libbase.so" \
+  "libv8_libplatform.so" \
+  "natives_blob.bin" \
+  "snapshot_blob.bin"
+
+mkdir -p "${image_dir}${prefix}/bin"
+cat > "${image_dir}${prefix}/bin/d8" <<EOF
+#!/bin/bash
+exec "\$(dirname "\$0")/../libexec/d8"
+EOF
+chmod a+x "${image_dir}${prefix}/bin/d8"
+
+source "${toolchain_dir}/lib/pack.sh"
