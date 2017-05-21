@@ -6,18 +6,44 @@ bin_dir="${image_dir}${prefix}/bin"
 wrap() {
   cat > "${bin_dir}/$1" <<EOF
 #!/bin/bash
-toolchain_dir="${toolchain_dir}"
+toolchain_dir="\$(realpath -s "\$(dirname "\$0")/../../..")"
 prefix="\${toolchain_dir}/out/usr"
 lib_dir="\${prefix}/lib"
-export CCACHE_DIR="\${toolchain_dir}/ccache"
-export CCACHE_HARDLINK=1
-export CCACHE_COMPILERCHECK=none
 
-if [ "\$#" -eq 0 ]; then
+if [ "\$#" = 0 ]; then
   exec "\${prefix}/bin/$2"
 fi
 
-exec ccache "\${prefix}/bin/$2" -Wno-unused-command-line-argument "\$@" -L\${lib_dir} -Wl,--rpath="\${lib_dir}"
+is_link=1
+is_solink=
+for i in "\$@"; do
+  case "\$i" in
+    -E|-fsyntax-only|-S|-c)
+      is_link=
+      break
+      ;;
+    -shared)
+      is_link=
+      is_solink=1
+      break
+      ;;
+    *)
+      ;;
+  esac
+done
+
+if [ -n "\${is_solink}" ]; then
+  exec "\${prefix}/bin/$2" "\$@" -L"\${lib_dir}"
+fi
+
+if [ -n "\${is_link}" ]; then
+  exec "\${prefix}/bin/$2" "\$@" -L"\${lib_dir}" -Wl,--rpath="\${lib_dir}"
+fi
+
+export CCACHE_DIR="\${toolchain_dir}/ccache"
+export CCACHE_HARDLINK=1
+export CCACHE_COMPILERCHECK=none
+exec ccache "\${prefix}/bin/$2" "\$@"
 EOF
   chmod a+x "${bin_dir}/$1"
 }
