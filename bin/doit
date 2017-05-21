@@ -1,0 +1,18 @@
+#!/bin/bash
+set -eu
+
+cd "$(dirname "$0")/.."
+
+pkgs=(
+  "ccache"
+  "ninja"
+  "cmake"
+  "llvm"
+  "v8"
+  "binaryen"
+  "wabt"
+)
+
+for i in "${pkgs[@]}"; do
+  "./pkg/${i}/bin/doit"
+done
