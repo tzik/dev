@@ -1,4 +1,5 @@
 #!/bin/bash
 source "$(dirname "$0")/package.sh"
-
 rm -rf "${image_dir}"
+cd "${src_dir}"
+git clean -dfx

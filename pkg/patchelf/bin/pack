@@ -1,4 +1,5 @@
 #!/bin/bash
 source "$(dirname "$0")/package.sh"
 source "${toolchain_dir}/lib/install-make.sh"
+strip "${image_dir}${prefix}/bin/patchelf"
 source "${toolchain_dir}/lib/pack.sh"
