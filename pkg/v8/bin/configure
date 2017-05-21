@@ -3,13 +3,35 @@ source "$(dirname "$0")/package.sh"
 
 cd "${src_dir}"
 
+mkdir -p "${src_dir}/build/toolchain/custom"
+cat > "${src_dir}/build/toolchain/custom/BUILD.gn" <<EOF
+import("//build/toolchain/gcc_toolchain.gni")
+gcc_toolchain("cc") {
+  cc = "cc"
+  cxx = "c++"
+  ld = cxx
+  readelf = "readelf"
+  ar = "llvm-ar"
+  nm = "nm"
+
+  enable_linker_map = true
+
+  toolchain_args = {
+    current_cpu = host_cpu
+    current_os = target_os
+    is_clang = true
+  }
+}
+EOF
+
 declare -a flags
 flags+=(
   "is_component_build=true"
   "is_debug=false"
+
   "use_sysroot=false"
+  "custom_toolchain=\"//build/toolchain/custom:cc\""
   "clang_base_path=\"${prefix}\""
-  "gcc_target_rpath=\"${prefix}/lib:\\\$ORIGIN\""
 )
 
 gn gen "${build_dir}" --args="${flags[*]}"

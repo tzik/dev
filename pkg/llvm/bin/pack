@@ -12,6 +12,11 @@ lib_dir="\${prefix}/lib"
 export CCACHE_DIR="\${toolchain_dir}/ccache"
 export CCACHE_HARDLINK=1
 export CCACHE_COMPILERCHECK=none
+
+if [ "\$#" -eq 0 ]; then
+  exec "\${prefix}/bin/$2"
+fi
+
 exec ccache "\${prefix}/bin/$2" -Wno-unused-command-line-argument "\$@" -L\${lib_dir} -Wl,--rpath="\${lib_dir}"
 EOF
   chmod a+x "${bin_dir}/$1"

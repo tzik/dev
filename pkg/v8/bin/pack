@@ -14,18 +14,21 @@ strip \
 mkdir -p "${image_dir}${prefix}/libexec"
 cp -t "${image_dir}${prefix}/libexec" \
   "d8" \
+  "natives_blob.bin" \
+  "snapshot_blob.bin"
+
+mkdir -p "${image_dir}${prefix}/lib"
+cp -t "${image_dir}${prefix}/lib" \
   "libv8.so" \
   "libicuuc.so" \
   "libicui18n.so" \
   "libv8_libbase.so" \
-  "libv8_libplatform.so" \
-  "natives_blob.bin" \
-  "snapshot_blob.bin"
+  "libv8_libplatform.so"
 
 mkdir -p "${image_dir}${prefix}/bin"
 cat > "${image_dir}${prefix}/bin/d8" <<EOF
 #!/bin/bash
-exec "\$(dirname "\$0")/../libexec/d8"
+exec "\$(dirname "\$0")/../libexec/d8" "\$@"
 EOF
 chmod a+x "${image_dir}${prefix}/bin/d8"
 
