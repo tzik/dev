@@ -62,3 +62,11 @@
 	path = pkg/ccache/src
 	url = https://github.com/ccache/ccache.git
 	branch = master
+[submodule "pkg/wabt/src"]
+	path = pkg/wabt/src
+	url = https://github.com/WebAssembly/wabt.git
+	branch = master
+[submodule "pkg/binaryen/src"]
+	path = pkg/binaryen/src
+	url = https://github.com/WebAssembly/binaryen.git
+	branch = master
