@@ -5,6 +5,7 @@ cd "$(dirname "$0")/.."
 
 pkgs=(
   "ccache"
+  "patchelf"
   "ninja"
   "cmake"
   "llvm"
