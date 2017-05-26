@@ -70,6 +70,8 @@ else
     "-DLLVM_POLLY_BUILD=ON"
     "-DLLVM_EXTERNAL_PROJECTS=chromium-tools"
     "-DCHROMIUM_TOOLS=base_bind_rewriters;plugins"
+
+    "-DLLDB_DISABLE_PYTHON=ON"
   )
 fi
 
