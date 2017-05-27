@@ -1,0 +1,23 @@
+#!/bin/bash
+set -eu
+
+cd "$(dirname "$0")/.."
+
+pkgs=(
+  "ccache"
+  "patchelf"
+  "ninja"
+  "cmake"
+  "llvm"
+  "v8"
+  "binaryen"
+  "wabt"
+)
+
+for i in "${pkgs[@]}"; do
+  tar="pkg/${i}/${i}.tar"
+  if [ ! -f "${tar}.xz" ]; then
+    xz --keep "${tar}"
+  fi
+  gsutil cp "${tar}.xz" "gs://storage.tzik.jp/toolchain/latest/${i}.tar.xz"
+done

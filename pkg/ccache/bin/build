@@ -1,3 +1,5 @@
 #!/bin/bash
 source "$(dirname "$0")/package.sh"
+
+export CCACHE_CPP2=1
 source "${toolchain_dir}/lib/build-make.sh"

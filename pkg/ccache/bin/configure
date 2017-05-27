@@ -5,4 +5,7 @@ cd "${src_dir}"
 ./autogen.sh
 
 export CC="cc"
+sed 's:/etc/\(asciidoc/docbook-xsl/manpage\.xsl\):/usr/share/\1:' \
+  -i dev.mk.in
 ./configure --prefix="${prefix}"
+
