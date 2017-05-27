@@ -19,5 +19,6 @@ for i in "${pkgs[@]}"; do
   if [ ! -f "${tar}.xz" ]; then
     xz --keep "${tar}"
   fi
-  gsutil cp "${tar}.xz" "gs://storage.tzik.jp/toolchain/latest/${i}.tar.xz"
+  gsutil cp -a public-read "${tar}.xz" \
+    "gs://storage.tzik.jp/toolchain/latest/${i}.tar.xz"
 done
