@@ -34,4 +34,5 @@ flags+=(
   "clang_base_path=\"${prefix}\""
 )
 
+export CHROMIUM_BUILDTOOLS_PATH="${src_dir}/buildtools"
 gn gen "${build_dir}" --args="${flags[*]}"
