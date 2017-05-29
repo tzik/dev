@@ -13,6 +13,10 @@ if ! [ -x "${prefix}/bin/cc" ]; then
     ./bin/unmerge
     ./bin/merge
   } 2>&1 | tee log
+
+  if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+    exit "${PIPESTATUS[0]}"
+  fi
 fi
 
 export bootstrap=
@@ -24,3 +28,4 @@ export bootstrap=
   ./bin/unmerge
   ./bin/merge
 } 2>&1 | tee log
+exit "${PIPESTATUS[0]}"

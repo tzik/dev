@@ -11,3 +11,4 @@ export PATH="${toolchain_dir}/out/usr/bin:/usr/bin:/usr/sbin:/bin:/sbin"
   ./bin/unmerge
   ./bin/merge
 } 2>&1 | tee log
+exit "${PIPESTATUS[0]}"
