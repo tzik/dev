@@ -1,5 +1,5 @@
 #!/bin/bash
 source "$(dirname "$0")/package.sh"
 cd "${src_dir}"
-git pull --ff-only
+git pull --ff-only origin master
 gclient sync
