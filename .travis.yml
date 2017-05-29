@@ -3,4 +3,17 @@ dist: trusty
 sudo: false
 language: cpp
 
+git:
+  submodules_depth: 100
+
+cache:
+  directories:
+    - "${HOME}/google-cloud-sdk"
+
+env:
+  - PATH=${HOME}/google-cloud-sdk/bin:${PATH}
+
+before_install:
+  - [ -d "${HOME}/google-cloud-sdk" ] || curl "https://sdk.cloud.google.com" | bash
+
 script: ./bin/travis-ci
