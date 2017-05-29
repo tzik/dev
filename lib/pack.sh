@@ -15,7 +15,7 @@ rpath_fix() {
         continue
       fi
 
-      patchelf --set-rpath '$ORIGIN/../lib' "$i"
+      patchelf --force-rpath --set-rpath '$ORIGIN/../lib' "$i"
     done
 }
 
