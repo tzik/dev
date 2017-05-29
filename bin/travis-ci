@@ -1,0 +1,23 @@
+#!/bin/bash
+set -eu
+
+cd "$(dirname "$0")/.."
+./bin/download-prebuilts
+
+pkgs=(
+  "ccache"
+  "patchelf"
+  "ninja"
+  "cmake"
+  "llvm"
+  "v8"
+  "binaryen"
+  "wabt"
+)
+
+for i in "${pkgs[@]}"; do
+  "./pkg/${i}/bin/merge"
+done
+
+export PATH="${PWD}/out/usr/bin:${PATH}"
+clang --version
