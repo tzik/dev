@@ -14,7 +14,7 @@ env:
   - PATH=${HOME}/google-cloud-sdk/bin:${PATH}
 
 before_install:
-  - if [ ! -d "${HOME}/google-cloud-sdk/bin" ]; then
+  - if [ ! -d "${HOME}/google-cloud-sdk" ] || rmdir "${HOME}/google-cloud-sdk"; then
       export CLOUDSDK_CORE_DISABLE_PROMPTS=1;
       curl "https://sdk.cloud.google.com" | bash;
     fi
