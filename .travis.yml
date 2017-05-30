@@ -14,6 +14,8 @@ env:
   - PATH=${HOME}/google-cloud-sdk/bin:${PATH}
 
 before_install:
-  - [ -d "${HOME}/google-cloud-sdk" ] || curl "https://sdk.cloud.google.com" | bash
+  - if [ ! -d "${HOME}/google-cloud-sdk" ]; then
+      curl "https://sdk.cloud.google.com";
+    fi | bash
 
 script: ./bin/travis-ci
