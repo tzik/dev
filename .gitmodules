@@ -82,3 +82,7 @@
 	path = pkg/patchelf/src
 	url = https://github.com/NixOS/patchelf.git
 	branch = master
+[submodule "pkg/protobuf/src"]
+	path = pkg/protobuf/src
+	url = https://github.com/google/protobuf.git
+	branch = master

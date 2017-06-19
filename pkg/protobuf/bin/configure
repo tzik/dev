@@ -1,0 +1,12 @@
+#!/bin/bash
+source "$(dirname "$0")/package.sh"
+
+cd "${src_dir}"
+./autogen.sh
+
+export CC="cc"
+export CXX="c++"
+export CFLAGS="-O2"
+export CXXFLAGS="-O2"
+./configure --prefix="${prefix}"
+
