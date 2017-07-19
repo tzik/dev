@@ -86,3 +86,7 @@
 	path = pkg/protobuf/src
 	url = https://github.com/google/protobuf.git
 	branch = master
+[submodule "pkg/z3/src"]
+	path = pkg/z3/src
+	url = https://github.com/Z3Prover/z3.git
+	branch = master

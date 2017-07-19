@@ -1,0 +1,12 @@
+#!/bin/bash
+source "$(dirname "$0")/package.sh"
+
+sed -i 's/^if (EXISTS "${GIT_DIR}")$/if (FALSE)/' \
+    "${src_dir}/CMakeLists.txt"
+
+declare -a flags
+cmake_dir="${src_dir}"
+
+flags+=("-DBUILD_LIBZ3_SHARED=ON")
+
+source "${toolchain_dir}/lib/configure-cmake.sh"

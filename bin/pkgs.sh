@@ -8,4 +8,5 @@ pkgs=(
   "binaryen"
   "wabt"
   "protobuf"
+  "z3"
 )
