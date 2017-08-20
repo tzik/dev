@@ -32,6 +32,7 @@ flags+=(
   "use_sysroot=false"
   "custom_toolchain=\"//build/toolchain/custom:cc\""
   "clang_base_path=\"${prefix}\""
+  "use_custom_libcxx=false"
 )
 
 export CHROMIUM_BUILDTOOLS_PATH="${src_dir}/buildtools"
