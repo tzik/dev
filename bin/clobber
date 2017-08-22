@@ -5,5 +5,5 @@ cd "$(dirname "$0")/.."
 source "bin/pkgs.sh"
 
 for i in "${pkgs[@]}"; do
-  "./pkg/${i}/bin/sync"
+  "./pkg/${i}/bin/clobber"
 done
