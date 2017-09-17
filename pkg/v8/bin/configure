@@ -15,6 +15,7 @@ gcc_toolchain("cc") {
   nm = "nm"
 
   enable_linker_map = true
+  extra_cxxflags = "-Wno-tautological-unsigned-zero-compare"
 
   toolchain_args = {
     current_cpu = host_cpu
