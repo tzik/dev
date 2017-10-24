@@ -3,6 +3,22 @@ source "$(dirname "$0")/package.sh"
 
 export PATH="${toolchain_dir}/out/usr/bin:/usr/bin:/usr/sbin:/bin:/sbin"
 
+export bootstrap
+
+if ! which lean > /dev/null 2>&1; then
+  export bootstrap=1
+  {
+    ./bin/clobber
+    ./bin/configure
+    ./bin/build
+    ./bin/pack
+    ./bin/unmerge
+    ./bin/merge
+  } 2>&1 | tee log
+  exit "${PIPESTATUS[0]}"
+fi
+
+bootstrap=
 {
   ./bin/clobber
   ./bin/configure

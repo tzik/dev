@@ -2,6 +2,4 @@
 source "$(dirname "$0")/package.sh"
 
 cd "${src_dir}"
-export CXX="c++"
-./configure.py --bootstrap
-./ninja all
+gclient sync

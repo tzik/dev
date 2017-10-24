@@ -4,10 +4,14 @@ source "$(dirname "$0")/package.sh"
 declare -a flags
 cmake_dir="${src_dir}/src"
 
+if [ -n "${bootstrap}" ]; then
+  flags+=("-DCMAKE_BUILD_TYPE=Debug")
+else
+  flags+=("-DCMAKE_BUILD_TYPE=Release")
+fi
+
 flags+=(
   "-GNinja"
-  # "-DCMAKE_BUILD_TYPE=Debug"
-  "-DCMAKE_BUILD_TYPE=Release"
   "-DCMAKE_INSTALL_PREFIX=${prefix}"
   "-DCMAKE_INSTALL_LIBDIR=lib"
 )

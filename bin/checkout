@@ -1,0 +1,10 @@
+#!/bin/bash
+set -eu
+
+cd "$(dirname "$0")/.."
+source "bin/pkgs.sh"
+
+git submodule update --init --recursive
+for i in "${pkgs[@]}"; do
+  [ ! -x "./pkg/${i}/bin/checkout" ] || "./pkg/${i}/bin/checkout"
+done
