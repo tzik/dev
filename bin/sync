@@ -4,6 +4,7 @@ set -eu
 cd "$(dirname "$0")/.."
 source "bin/pkgs.sh"
 
+git submodule update --remote --init pkg/depot_tools
 for i in "${pkgs[@]}"; do
   "./pkg/${i}/bin/sync"
 done
