@@ -70,7 +70,7 @@ else
 
     "-DLLVM_POLLY_BUILD=ON"
     "-DLLVM_EXTERNAL_PROJECTS=chromium-tools"
-    "-DCHROMIUM_TOOLS=base_bind_rewriters;plugins"
+    "-DCHROMIUM_TOOLS=base_bind_rewriters;plugins;blink_gc_plugin"
 
     "-DLLDB_DISABLE_PYTHON=ON"
     "-DLLVM_ENABLE_TERMINFO=OFF"
