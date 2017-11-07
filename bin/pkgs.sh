@@ -9,5 +9,5 @@ pkgs=(
   "wabt"
   "protobuf"
   "z3"
-  "lean"
+  # "lean"
 )
