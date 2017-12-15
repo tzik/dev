@@ -94,3 +94,7 @@
 	path = pkg/lean/src
 	url = https://github.com/leanprover/lean.git
 	branch = master
+[submodule "pkg/musl/src"]
+	path = pkg/musl/src
+	url = git://git.musl-libc.org/musl
+	branch = master

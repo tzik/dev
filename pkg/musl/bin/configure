@@ -1,0 +1,6 @@
+#!/bin/bash
+source "$(dirname "$0")/package.sh"
+
+cd "${src_dir}"
+export CC="cc"
+./configure --prefix="${prefix}" --disable-wrapper
