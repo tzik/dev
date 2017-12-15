@@ -12,8 +12,8 @@ if ! which lean > /dev/null 2>&1; then
     ./bin/configure
     ./bin/build
     ./bin/pack
-    ./bin/unmerge
-    ./bin/merge
+    "${toolchain_dir}/bin/unmerge" "${prefix}" "${package_name}"
+    "${toolchain_dir}/bin/merge" "${prefix}" "${package_file}"
   } 2>&1 | tee log
   exit "${PIPESTATUS[0]}"
 fi
@@ -24,7 +24,7 @@ bootstrap=
   ./bin/configure
   ./bin/build
   ./bin/pack
-  ./bin/unmerge
-  ./bin/merge
+  "${toolchain_dir}/bin/unmerge" "${prefix}" "${package_name}"
+  "${toolchain_dir}/bin/merge" "${prefix}" "${package_file}"
 } 2>&1 | tee log
 exit "${PIPESTATUS[0]}"

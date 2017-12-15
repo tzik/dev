@@ -1,0 +1,9 @@
+#!/bin/bash
+set -ue
+
+prefix="$1"
+package_file="$2"
+
+mkdir -p "${prefix}"
+tar xf "${package_file}" -C "${prefix}"
+

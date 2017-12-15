@@ -10,8 +10,8 @@ if ! [ -x "${prefix}/bin/cc" ]; then
     ./bin/configure
     ./bin/build
     ./bin/pack
-    ./bin/unmerge
-    ./bin/merge
+    "${toolchain_dir}/bin/unmerge" "${prefix}" "${package_name}"
+    "${toolchain_dir}/bin/merge" "${prefix}" "${package_file}"
   } 2>&1 | tee log
 
   if [ "${PIPESTATUS[0]}" -ne 0 ]; then
@@ -25,7 +25,7 @@ export bootstrap=
   ./bin/configure
   ./bin/build
   ./bin/pack
-  ./bin/unmerge
-  ./bin/merge
+  "${toolchain_dir}/bin/unmerge" "${prefix}" "${package_name}"
+  "${toolchain_dir}/bin/merge" "${prefix}" "${package_file}"
 } 2>&1 | tee log
 exit "${PIPESTATUS[0]}"

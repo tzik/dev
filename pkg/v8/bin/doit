@@ -8,7 +8,7 @@ export PATH="${toolchain_dir}/out/usr/bin:${toolchain_dir}/pkg/depot_tools:/usr/
   ./bin/configure
   ./bin/build
   ./bin/pack
-  ./bin/unmerge
-  ./bin/merge
+  "${toolchain_dir}/bin/unmerge" "${prefix}" "${package_name}"
+  "${toolchain_dir}/bin/merge" "${prefix}" "${package_file}"
 } 2>&1 | tee log
 exit "${PIPESTATUS[0]}"
