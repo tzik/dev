@@ -6,7 +6,7 @@ bin_dir="${image_dir}${prefix}/bin"
 wrap() {
   cat > "${bin_dir}/$1" <<EOF
 #!/bin/bash
-toolchain_dir="\$(realpath -s "\$(dirname "\$0")/../../..")"
+toolchain_dir="\${0%/*/*/*/*}"
 prefix="\${toolchain_dir}/out/usr"
 lib_dir="\${prefix}/lib"
 
