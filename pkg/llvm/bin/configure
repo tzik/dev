@@ -29,7 +29,6 @@ if [ -n "${bootstrap}" ]; then
   tools=(
     clang
   )
-
 else
   flags+=(
     "-DCMAKE_C_COMPILER=${prefix}/bin/cc"

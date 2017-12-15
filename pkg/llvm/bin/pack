@@ -42,7 +42,7 @@ fi
 
 export CCACHE_DIR="\${toolchain_dir}/ccache"
 export CCACHE_HARDLINK=1
-export CCACHE_COMPILERCHECK="string:\${prefix}/bin/$2"
+export CCACHE_COMPILERCHECK="string:\${prefix}/bin/$2,bootstrap=${bootstrap:-0}"
 exec ccache "\${prefix}/bin/$2" "\$@"
 EOF
   chmod a+x "${bin_dir}/$1"
