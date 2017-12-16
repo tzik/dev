@@ -4,4 +4,4 @@ rm -rf "${image_dir}"
 git submodule update --force --no-fetch .
 
 cd "${src_dir}"
-git clean -dfx
+git clean -df
