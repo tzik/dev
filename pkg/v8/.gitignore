@@ -1,4 +1,5 @@
 /.gclient_entries
+/build
 /image
 /log
 /v8.tar

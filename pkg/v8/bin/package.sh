@@ -6,7 +6,7 @@ toolchain_dir="$(realpath -s "${base_dir}/../..")"
 
 src_dir="${base_dir}/v8"
 
-build_dir="${base_dir}/v8/out/linux-release"
+build_dir="${base_dir}/build"
 image_dir="${base_dir}/image"
 prefix="${toolchain_dir}/out/usr"
 

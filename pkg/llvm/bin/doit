@@ -6,7 +6,6 @@ export PATH="${prefix}/bin:/usr/bin:/usr/sbin:/bin:/sbin"
 if ! [ -x "${prefix}/bin/cc" ]; then
   export bootstrap=1
   {
-    ./bin/clobber
     ./bin/prepare
     ./bin/configure
     ./bin/build
@@ -22,7 +21,6 @@ fi
 
 export bootstrap=
 {
-  ./bin/clobber
   ./bin/prepare
   ./bin/configure
   ./bin/build
