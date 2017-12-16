@@ -1,0 +1,9 @@
+--- a/src/lldb/source/Plugins/ObjectFile/ELF/CMakeLists.txt
++++ b/src/lldb/source/Plugins/ObjectFile/ELF/CMakeLists.txt
+@@ -9,5 +9,6 @@ add_lldb_library(lldbPluginObjectFileELF PLUGIN
+     lldbTarget
+   LINK_COMPONENTS
+     BinaryFormat
++    Object
+     Support
+   )
