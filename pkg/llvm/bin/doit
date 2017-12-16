@@ -7,6 +7,7 @@ if ! [ -x "${prefix}/bin/cc" ]; then
   export bootstrap=1
   {
     ./bin/clobber
+    ./bin/prepare
     ./bin/configure
     ./bin/build
     ./bin/pack
@@ -22,6 +23,7 @@ fi
 export bootstrap=
 {
   ./bin/clobber
+  ./bin/prepare
   ./bin/configure
   ./bin/build
   ./bin/pack
