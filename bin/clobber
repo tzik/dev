@@ -4,5 +4,4 @@ set -eu
 cd "$(dirname "$0")/.."
 
 rm -rf pkg/*/{build,image}
-git submodule foreach --recursive git reset --hard
-git submodule foreach --recursive git clean -df
+git submodule foreach --recursive "git reset --hard && git clean -df"
