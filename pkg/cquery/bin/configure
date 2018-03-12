@@ -1,0 +1,15 @@
+#!/bin/bash
+source "$(dirname "$0")/package.sh"
+
+declare -a flags
+
+flags+=(
+  "--out=${build_dir}"
+  "--top=${src_dir}"
+  "--prefix=${prefix}"
+  "--llvm-config=llvm-config"
+)
+
+cd "${src_dir}"
+export CXX="c++"
+"${src_dir}/waf" configure "${flags[@]}"

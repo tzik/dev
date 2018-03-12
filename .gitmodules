@@ -98,3 +98,7 @@
 	path = pkg/musl/src
 	url = git://git.musl-libc.org/musl
 	branch = master
+[submodule "pkg/cquery/src"]
+	path = pkg/cquery/src
+	url = https://github.com/cquery-project/cquery
+	branch = master
