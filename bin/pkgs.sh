@@ -4,6 +4,7 @@ pkgs=(
   "ninja"
   "cmake"
   "llvm"
+  "cquery"
   "v8"
   "binaryen"
   "wabt"
