@@ -2,6 +2,10 @@
 source "$(dirname "$0")/package.sh"
 source "${toolchain_dir}/lib/install-cmake.sh"
 
+mkdir -p "${image_dir}${prefix}/share/clang/bindings"
+cp -r "${src_dir}/clang/bindings/python" \
+  "${image_dir}${prefix}/share/clang/bindings"
+
 bin_dir="${image_dir}${prefix}/bin"
 wrap() {
   cat > "${bin_dir}/$1" <<EOF

@@ -1,4 +1,4 @@
 #!/bin/bash
 source "$(dirname "$0")/package.sh"
 cd "${base_dir}"
-git submodule update --remote --init .
+git submodule update --remote --init --recursive .
