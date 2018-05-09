@@ -33,6 +33,7 @@ else
   flags+=(
     "-DCMAKE_C_COMPILER=${prefix}/bin/cc"
     "-DCMAKE_CXX_COMPILER=${prefix}/bin/c++"
+    # "-DLLVM_ENABLE_ASSERTIONS=ON"
 
     "-DLLVM_TARGETS_TO_BUILD=X86;ARM;AArch64"
     "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly"
@@ -70,6 +71,8 @@ else
     "-DLLVM_POLLY_BUILD=ON"
     "-DLLVM_EXTERNAL_PROJECTS=chromium-tools"
     "-DCHROMIUM_TOOLS=base_bind_rewriters;plugins;blink_gc_plugin"
+    "-DCMAKE_C_FLAGS=-DLLVM_FORCE_HEAD_REVISION"
+    "-DCMAKE_CXX_FLAGS=-DLLVM_FORCE_HEAD_REVISION"
 
     "-DLLDB_DISABLE_PYTHON=ON"
     "-DLLVM_ENABLE_TERMINFO=OFF"

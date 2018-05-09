@@ -5,7 +5,7 @@ export PATH="${toolchain_dir}/out/usr/bin:/usr/bin:/usr/sbin:/bin:/sbin"
 
 {
   ./bin/build
-  ./bin/test
+  # ./bin/test
   ./bin/pack
   "${toolchain_dir}/bin/unmerge" "${prefix}" "${package_name}"
   "${toolchain_dir}/bin/merge" "${prefix}" "${package_file}"
