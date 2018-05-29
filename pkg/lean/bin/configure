@@ -4,7 +4,7 @@ source "$(dirname "$0")/package.sh"
 declare -a flags
 cmake_dir="${src_dir}/src"
 
-if [ -n "${bootstrap}" ]; then
+if [ -n "${bootstrap:-}" ]; then
   flags+=("-DCMAKE_BUILD_TYPE=Debug")
 else
   flags+=("-DCMAKE_BUILD_TYPE=Release")

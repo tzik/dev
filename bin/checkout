@@ -4,7 +4,8 @@ set -eu
 cd "$(dirname "$0")/.."
 source "bin/pkgs.sh"
 
-git submodule update --init --recursive
+git submodule update --depth=1000 --init
 for i in "${pkgs[@]}"; do
   [ ! -x "./pkg/${i}/bin/checkout" ] || "./pkg/${i}/bin/checkout"
 done
+git submodule update --depth=1000 --init --recursive
