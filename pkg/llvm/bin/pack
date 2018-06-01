@@ -11,11 +11,12 @@ wrap() {
   cat > "${bin_dir}/$1" <<EOF
 #!/bin/bash
 toolchain_dir="\${0%/*/*/*/*}"
-prefix="\${toolchain_dir}/out/usr"
+prefix="\${prefix_override:-\${toolchain_dir}/out/usr}"
 lib_dir="\${prefix}/lib"
+binary="\${prefix}/bin/$2"
 
 if [ "\$#" = 0 ]; then
-  exec "\${prefix}/bin/$2"
+  exec "\${binary}"
 fi
 
 is_link=1
@@ -37,17 +38,17 @@ for i in "\$@"; do
 done
 
 if [ -n "\${is_solink}" ]; then
-  exec "\${prefix}/bin/$2" "\$@" -L"\${lib_dir}"
+  exec "\${binary}" "\$@" -L"\${lib_dir}"
 fi
 
 if [ -n "\${is_link}" ]; then
-  exec "\${prefix}/bin/$2" "\$@" -L"\${lib_dir}" -Wl,--rpath="\${lib_dir}"
+  exec "\${binary}" "\$@" -L"\${lib_dir}" -Wl,--rpath="\${lib_dir}"
 fi
 
 export CCACHE_DIR="\${toolchain_dir}/ccache"
 export CCACHE_HARDLINK=1
-export CCACHE_COMPILERCHECK="string:\${prefix}/bin/$2,bootstrap=${bootstrap:-0}"
-exec ccache "\${prefix}/bin/$2" "\$@"
+export CCACHE_COMPILERCHECK="string:\${binary},bootstrap=${bootstrap:-0}"
+exec ccache "\${binary}" "\$@"
 EOF
   chmod a+x "${bin_dir}/$1"
 }

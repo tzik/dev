@@ -7,4 +7,4 @@ source "bin/pkgs.sh"
 for i in "${pkgs[@]}"; do
   echo "Building $i."
   "./pkg/${i}/bin/doit"
-done
+done 2>&1 | tee log

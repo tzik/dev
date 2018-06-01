@@ -9,33 +9,32 @@ cd "${build_dir}"
 
 declare -a flags
 flags+=(
+  "-Wno-dev"
   "-GNinja"
   "-DCMAKE_INSTALL_PREFIX=${prefix}"
+  "-DCMAKE_C_COMPILER_TARGET=x86_64-pc-linux-gnu"
 
   "-DLLVM_HOST_TRIPLE=x86_64-pc-linux-gnu"
   "-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-pc-linux-gnu"
 )
-
-
-if [ -n "${debug}" ]; then
-  flags+=("-DCMAKE_BUILD_TYPE=Debug")
-else
-  flags+=("-DCMAKE_BUILD_TYPE=Release")
-fi
 
 if [ -n "${bootstrap}" ]; then
   flags+=(
     "-DLLVM_TOOL_LLDB_BUILD=OFF"
     "-DLLVM_TOOL_LLD_BUILD=OFF"
     "-DLLVM_TOOL_CLANG_TOOLS_EXTRA_BUILD=OFF"
-
     "-DLLVM_TARGETS_TO_BUILD=X86"
     "-DBUILD_SHARED_LIBS=OFF"
+    "-DCMAKE_BUILD_TYPE=Release"
   )
-  tools=(
-    clang
-  )
+  tools=(clang)
 else
+  if [ -n "${debug}" ]; then
+    flags+=("-DCMAKE_BUILD_TYPE=Debug")
+  else
+    flags+=("-DCMAKE_BUILD_TYPE=Release")
+  fi
+
   flags+=(
     "-DCMAKE_C_COMPILER=${prefix}/bin/cc"
     "-DCMAKE_CXX_COMPILER=${prefix}/bin/c++"
@@ -44,6 +43,7 @@ else
     "-DLLVM_TARGETS_TO_BUILD=X86;ARM;AArch64"
     "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly"
     "-DBUILD_SHARED_LIBS=ON"
+    # "-DBUILD_SHARED_LIBS=OFF"
   )
 
   tools=(
@@ -82,6 +82,9 @@ else
 
     "-DLLDB_DISABLE_PYTHON=ON"
     "-DLLVM_ENABLE_TERMINFO=OFF"
+
+    "-DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON"
+    "-DCOMPILER_RT_DEFAULT_TARGET_ARCH=X86_64"
   )
 fi
 
