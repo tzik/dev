@@ -9,14 +9,14 @@ if ! [ -x "${prefix}/bin/cc" ]; then
     ./bin/prepare
     ./bin/configure
     ./bin/build
-    ./bin/pack
-    "${toolchain_dir}/bin/unmerge" "${prefix}" "${package_name}"
-    "${toolchain_dir}/bin/merge" "${prefix}" "${package_file}"
-  } 2>&1 | tee log
-
+    no_rpath_fix=1 ./bin/pack
+    "${toolchain_dir}/bin/unmerge" "${bootstrap_prefix}" "${package_name}"
+    "${toolchain_dir}/bin/merge" "${bootstrap_prefix}" "${package_file}"
+  } 2>&1 | tee log-bootstrap
   if [ "${PIPESTATUS[0]}" -ne 0 ]; then
     exit "${PIPESTATUS[0]}"
   fi
+  PATH="${bootstrap_prefix}/bin:${PATH}"
 fi
 
 export bootstrap=

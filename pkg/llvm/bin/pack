@@ -7,11 +7,12 @@ cp -r "${src_dir}/clang/bindings/python" \
   "${image_dir}${prefix}/share/clang/bindings"
 
 bin_dir="${image_dir}${prefix}/bin"
+mkdir -p "${bin_dir}"
+
 wrap() {
   cat > "${bin_dir}/$1" <<EOF
 #!/bin/bash
-toolchain_dir="\${0%/*/*/*/*}"
-prefix="\${prefix_override:-\${toolchain_dir}/out/usr}"
+prefix="\${0%/*}/.."
 lib_dir="\${prefix}/lib"
 binary="\${prefix}/bin/$2"
 
@@ -45,7 +46,7 @@ if [ -n "\${is_link}" ]; then
   exec "\${binary}" "\$@" -L"\${lib_dir}" -Wl,--rpath="\${lib_dir}"
 fi
 
-export CCACHE_DIR="\${toolchain_dir}/ccache"
+export CCACHE_DIR="\${prefix}/var/ccache"
 export CCACHE_HARDLINK=1
 export CCACHE_COMPILERCHECK="string:\${binary},bootstrap=${bootstrap:-0}"
 exec ccache "\${binary}" "\$@"

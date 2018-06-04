@@ -1,7 +1,10 @@
 #!/bin/bash
 source "$(dirname "$0")/package.sh"
 
+git submodule foreach --quiet --recursive \
+  "git reset --hard && git clean -df" > /dev/null
+
 shopt -s nullglob
 for i in patches/*.patch; do
-  patch -p1 < "$i"
+  patch -N -t -p1 < "$i"
 done

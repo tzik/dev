@@ -36,8 +36,6 @@ else
   fi
 
   flags+=(
-    "-DCMAKE_C_COMPILER=${prefix}/bin/cc"
-    "-DCMAKE_CXX_COMPILER=${prefix}/bin/c++"
     # "-DLLVM_ENABLE_ASSERTIONS=ON"
 
     "-DLLVM_TARGETS_TO_BUILD=X86;ARM;AArch64"

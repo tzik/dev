@@ -1,4 +1,3 @@
-
 renice -n 20 -p "$$"
 ionice -c 3 -p "$$"
 

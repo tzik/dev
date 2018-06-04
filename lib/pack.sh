@@ -1,10 +1,10 @@
-
 mkdir -p "${image_dir}${prefix}" "$(dirname "${image_dir}${metadata_file}")"
 cd "${image_dir}${prefix}"
 find . -depth -print0 > "${image_dir}${metadata_file}"
 
 rpath_fix() {
   local target="$1"
+  local value="$2"
   if [ ! -d "${target}" ]; then
     return 0
   fi
@@ -15,13 +15,14 @@ rpath_fix() {
         continue
       fi
 
-      patchelf --force-rpath --set-rpath '$ORIGIN/../lib' "$i"
+      patchelf --force-rpath --set-rpath "${value}" "$i"
     done
 }
 
-if which patchelf > /dev/null 2>&1; then
-  rpath_fix "${image_dir}${prefix}/bin"
-  rpath_fix "${image_dir}${prefix}/libexec"
+if [ -z "${no_rpath_fix:-}" ] && which patchelf > /dev/null 2>&1; then
+  rpath_fix "${image_dir}${prefix}/bin" '$ORIGIN/../lib'
+  rpath_fix "${image_dir}${prefix}/libexec" '$ORIGIN/../lib'
+  rpath_fix "${image_dir}${prefix}/lib" '$ORIGIN'
 fi
 
 rm -f "${package_file}"

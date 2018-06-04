@@ -1,4 +1,0 @@
-#!/bin/bash
-source "$(dirname "$0")/package.sh"
-source "${toolchain_dir}/lib/install-cmake.sh"
-source "${toolchain_dir}/lib/pack.sh"
