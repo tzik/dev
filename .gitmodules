@@ -2,99 +2,124 @@
 	path = pkg/llvm/src/llvm
 	url = https://llvm.googlesource.com/llvm.git
 	branch = master
+	shallow = true
 [submodule "pkg/llvm/src/clang"]
 	path = pkg/llvm/src/clang
 	url = https://llvm.googlesource.com/clang.git
 	branch = master
+	shallow = true
 [submodule "pkg/llvm/src/clang-tools-extra"]
 	path = pkg/llvm/src/clang-tools-extra
 	url = https://llvm.googlesource.com/clang-tools-extra.git
 	branch = master
+	shallow = true
 [submodule "pkg/llvm/src/compiler-rt"]
 	path = pkg/llvm/src/compiler-rt
 	url = https://llvm.googlesource.com/compiler-rt.git
 	branch = master
+	shallow = true
 [submodule "pkg/llvm/src/libcxxabi"]
 	path = pkg/llvm/src/libcxxabi
 	url = https://llvm.googlesource.com/libcxxabi.git
 	branch = master
+	shallow = true
 [submodule "pkg/llvm/src/libcxx"]
 	path = pkg/llvm/src/libcxx
 	url = https://llvm.googlesource.com/libcxx.git
 	branch = master
+	shallow = true
 [submodule "pkg/llvm/src/libunwind"]
 	path = pkg/llvm/src/libunwind
 	url = https://llvm.googlesource.com/libunwind.git
 	branch = master
+	shallow = true
 [submodule "pkg/llvm/src/lld"]
 	path = pkg/llvm/src/lld
 	url = https://llvm.googlesource.com/lld.git
 	branch = master
+	shallow = true
 [submodule "pkg/llvm/src/lldb"]
 	path = pkg/llvm/src/lldb
 	url = https://llvm.googlesource.com/lldb.git
 	branch = master
+	shallow = true
 [submodule "pkg/llvm/src/polly"]
 	path = pkg/llvm/src/polly
 	url = https://llvm.googlesource.com/polly.git
 	branch = master
+	shallow = true
 [submodule "pkg/llvm/src/chromium-tools"]
 	path = pkg/llvm/src/chromium-tools
 	url = https://chromium.googlesource.com/chromium/src/tools/clang.git
 	branch = master
+	shallow = true
 [submodule "pkg/glibc/src"]
 	path = pkg/glibc/src
 	url = git://sourceware.org/git/glibc.git
 	branch = master
+	shallow = true
 [submodule "pkg/binutils/src"]
 	path = pkg/binutils/src
 	url = git://sourceware.org/git/binutils-gdb.git
 	branch = master
+	shallow = true
 [submodule "pkg/cmake/src"]
 	path = pkg/cmake/src
-	url = https://gitlab.kitware.com/cmake/cmake.git
+	url = https://chromium.googlesource.com/external/github.com/Kitware/CMake.git
 	branch = master
+	shallow = true
 [submodule "pkg/ninja/src"]
 	path = pkg/ninja/src
-	url = https://github.com/ninja-build/ninja.git
+	url = https://chromium.googlesource.com/external/github.com/ninja-build/ninja.git
 	branch = master
+	shallow = true
 [submodule "pkg/ccache/src"]
 	path = pkg/ccache/src
 	url = https://github.com/ccache/ccache.git
 	branch = master
+	shallow = false
 [submodule "pkg/wabt/src"]
 	path = pkg/wabt/src
-	url = https://github.com/WebAssembly/wabt.git
+	url = https://chromium.googlesource.com/external/github.com/WebAssembly/wabt.git
 	branch = master
+	shallow = true
 [submodule "pkg/binaryen/src"]
 	path = pkg/binaryen/src
-	url = https://github.com/WebAssembly/binaryen.git
+	url = https://chromium.googlesource.com/external/github.com/WebAssembly/binaryen.git
 	branch = master
+	shallow = true
 [submodule "pkg/v8/v8"]
 	path = pkg/v8/v8
 	url = https://chromium.googlesource.com/v8/v8
 	branch = master
+	shallow = true
 [submodule "pkg/depot_tools"]
 	path = pkg/depot_tools
 	url = https://chromium.googlesource.com/chromium/tools/depot_tools.git
 	branch = master
+	shallow = true
 [submodule "pkg/patchelf/src"]
 	path = pkg/patchelf/src
 	url = https://github.com/NixOS/patchelf.git
 	branch = master
+	shallow = false
 [submodule "pkg/protobuf/src"]
 	path = pkg/protobuf/src
-	url = https://github.com/google/protobuf.git
+	url = https://chromium.googlesource.com/external/github.com/google/protobuf.git
 	branch = master
+	shallow = true
 [submodule "pkg/z3/src"]
 	path = pkg/z3/src
 	url = https://github.com/Z3Prover/z3.git
 	branch = master
+	shallow = false
 [submodule "pkg/musl/src"]
 	path = pkg/musl/src
 	url = git://git.musl-libc.org/musl
 	branch = master
+	shallow = false
 [submodule "pkg/cquery/src"]
 	path = pkg/cquery/src
 	url = https://github.com/cquery-project/cquery
 	branch = master
+	shallow = false
