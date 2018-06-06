@@ -1,0 +1,612 @@
+diff --git a/include/clang/AST/Decl.h b/include/clang/AST/Decl.h
+index c10ca9e967..0a0b2c16c0 100644
+--- a/src/clang/include/clang/AST/Decl.h
++++ b/src/clang/include/clang/AST/Decl.h
+@@ -879,6 +879,12 @@ protected:
+     DAK_Normal
+   };
+ 
++  enum NRVOMode {
++    NRVO_Candidate,
++    NRVO_Disabled,
++    NRVO_Enabled,
++  };
++
+   class ParmVarDeclBitfields {
+     friend class ASTDeclReader;
+     friend class ParmVarDecl;
+@@ -931,7 +937,7 @@ protected:
+     /// Whether this local variable could be allocated in the return
+     /// slot of its function, enabling the named return value optimization
+     /// (NRVO).
+-    unsigned NRVOVariable : 1;
++    unsigned NRVOMode : 2;
+ 
+     /// Whether this variable is the for-range-declaration in a C++0x
+     /// for-range statement.
+@@ -1319,12 +1325,20 @@ public:
+   /// return slot when returning from the function. Within the function body,
+   /// each return that returns the NRVO object will have this variable as its
+   /// NRVO candidate.
++  NRVOMode getNRVOMode() const {
++    if (isa<ParmVarDecl>(this))
++      return NRVO_Disabled;
++    return static_cast<NRVOMode>(NonParmVarDeclBits.NRVOMode);
++  }
++  bool isNRVOCandidate() const {
++    return isa<ParmVarDecl>(this) ? false : NonParmVarDeclBits.NRVOMode == NRVO_Candidate;
++  }
+   bool isNRVOVariable() const {
+-    return isa<ParmVarDecl>(this) ? false : NonParmVarDeclBits.NRVOVariable;
++    return isa<ParmVarDecl>(this) ? false : NonParmVarDeclBits.NRVOMode == NRVO_Enabled;
+   }
+   void setNRVOVariable(bool NRVO) {
+     assert(!isa<ParmVarDecl>(this));
+-    NonParmVarDeclBits.NRVOVariable = NRVO;
++    NonParmVarDeclBits.NRVOMode = NRVO ? NRVO_Enabled : NRVO_Disabled;
+   }
+ 
+   /// Determine whether this variable is the for-range-declaration in
+diff --git a/include/clang/Sema/Scope.h b/include/clang/Sema/Scope.h
+index a3379ff34f..298c5461ad 100644
+--- a/src/clang/include/clang/Sema/Scope.h
++++ b/src/clang/include/clang/Sema/Scope.h
+@@ -201,10 +201,6 @@ private:
+   /// Used to determine if errors occurred in this scope.
+   DiagnosticErrorTrap ErrorTrap;
+ 
+-  /// A lattice consisting of undefined, a single NRVO candidate variable in
+-  /// this scope, or over-defined. The bit is true when over-defined.
+-  llvm::PointerIntPair<VarDecl *, 1, bool> NRVO;
+-
+   void setFlags(Scope *Parent, unsigned F);
+ 
+ public:
+@@ -466,23 +462,7 @@ public:
+                                   UsingDirectives.end());
+   }
+ 
+-  void addNRVOCandidate(VarDecl *VD) {
+-    if (NRVO.getInt())
+-      return;
+-    if (NRVO.getPointer() == nullptr) {
+-      NRVO.setPointer(VD);
+-      return;
+-    }
+-    if (NRVO.getPointer() != VD)
+-      setNoNRVO();
+-  }
+-
+-  void setNoNRVO() {
+-    NRVO.setInt(true);
+-    NRVO.setPointer(nullptr);
+-  }
+-
+-  void mergeNRVOIntoParent();
++  void setNRVOCandidate(VarDecl *Candidate);
+ 
+   /// Init - This is used by the parser to implement scope caching.
+   void Init(Scope *parent, unsigned flags);
+diff --git a/lib/Sema/Scope.cpp b/lib/Sema/Scope.cpp
+index eae5a328bf..5a46ba26d2 100644
+--- a/src/clang/lib/Sema/Scope.cpp
++++ b/src/clang/lib/Sema/Scope.cpp
+@@ -92,7 +92,6 @@ void Scope::Init(Scope *parent, unsigned flags) {
+   UsingDirectives.clear();
+   Entity = nullptr;
+   ErrorTrap.reset();
+-  NRVO.setPointerAndInt(nullptr, 0);
+ }
+ 
+ bool Scope::containedInPrototypeScope() const {
+@@ -119,19 +118,15 @@ void Scope::AddFlags(unsigned FlagsToSet) {
+   Flags |= FlagsToSet;
+ }
+ 
+-void Scope::mergeNRVOIntoParent() {
+-  if (VarDecl *Candidate = NRVO.getPointer()) {
+-    if (isDeclScope(Candidate))
+-      Candidate->setNRVOVariable(true);
++void Scope::setNRVOCandidate(VarDecl *Candidate) {
++  for (Decl *D : DeclsInScope) {
++    VarDecl *VD = dyn_cast<VarDecl>(D);
++    if (VD && VD != Candidate && VD->isNRVOCandidate())
++      VD->setNRVOVariable(false);
+   }
+ 
+-  if (getEntity())
+-    return;
+-
+-  if (NRVO.getInt())
+-    getParent()->setNoNRVO();
+-  else if (NRVO.getPointer())
+-    getParent()->addNRVOCandidate(NRVO.getPointer());
++  if (Scope *parent = getParent())
++    parent->setNRVOCandidate(Candidate);
+ }
+ 
+ LLVM_DUMP_METHOD void Scope::dump() const { dumpImpl(llvm::errs()); }
+@@ -191,9 +186,4 @@ void Scope::dumpImpl(raw_ostream &OS) const {
+   OS << "MSCurManglingNumber: " << getMSCurManglingNumber() << '\n';
+   if (const DeclContext *DC = getEntity())
+     OS << "Entity : (clang::DeclContext*)" << DC << '\n';
+-
+-  if (NRVO.getInt())
+-    OS << "NRVO not allowed\n";
+-  else if (NRVO.getPointer())
+-    OS << "NRVO candidate : (clang::VarDecl*)" << NRVO.getPointer() << '\n';
+ }
+diff --git a/lib/Sema/SemaDecl.cpp b/lib/Sema/SemaDecl.cpp
+index 862da62149..42477324ca 100644
+--- a/src/clang/lib/Sema/SemaDecl.cpp
++++ b/src/clang/lib/Sema/SemaDecl.cpp
+@@ -1798,8 +1798,6 @@ static void CheckPoppedLabel(LabelDecl *L, Sema &S) {
+ }
+ 
+ void Sema::ActOnPopScope(SourceLocation Loc, Scope *S) {
+-  S->mergeNRVOIntoParent();
+-
+   if (S->decl_empty()) return;
+   assert((S->getFlags() & (Scope::DeclScope | Scope::TemplateParamScope)) &&
+          "Scope shouldn't contain decls!");
+@@ -12611,21 +12609,24 @@ Decl *Sema::ActOnStartOfFunctionDef(Scope *FnBodyScope, Decl *D,
+ /// optimization.
+ ///
+ /// Each of the variables that is subject to the named return value
+-/// optimization will be marked as NRVO variables in the AST, and any
++/// optimization will be marked as NRVO variable candidates in the AST, and any
+ /// return statement that has a marked NRVO variable as its NRVO candidate can
+ /// use the named return value optimization.
+ ///
+-/// This function applies a very simplistic algorithm for NRVO: if every return
+-/// statement in the scope of a variable has the same NRVO candidate, that
+-/// candidate is an NRVO variable.
++/// This function applies a very simplistic algorithm for NRVO: if every
++/// reachable return statement in the scope of a variable has the same NRVO
++/// candidate, that candidate is an NRVO variable.
+ void Sema::computeNRVO(Stmt *Body, FunctionScopeInfo *Scope) {
+-  ReturnStmt **Returns = Scope->Returns.data();
++  for (ReturnStmt *Return : Scope->Returns) {
++    const VarDecl *Candidate = Return->getNRVOCandidate();
++    if (!Candidate)
++      continue;
+ 
+-  for (unsigned I = 0, E = Scope->Returns.size(); I != E; ++I) {
+-    if (const VarDecl *NRVOCandidate = Returns[I]->getNRVOCandidate()) {
+-      if (!NRVOCandidate->isNRVOVariable())
+-        Returns[I]->setNRVOCandidate(nullptr);
+-    }
++    if (Candidate->isNRVOCandidate())
++      const_cast<VarDecl*>(Candidate)->setNRVOVariable(true);
++
++    if (!Candidate->isNRVOVariable())
++      Return->setNRVOCandidate(nullptr);
+   }
+ }
+ 
+@@ -12760,12 +12761,8 @@ Decl *Sema::ActOnFinishFunctionBody(Decl *dcl, Stmt *Body,
+       else if (CXXDestructorDecl *Destructor = dyn_cast<CXXDestructorDecl>(FD))
+         MarkVTableUsed(FD->getLocation(), Destructor->getParent());
+ 
+-      // Try to apply the named return value optimization. We have to check
+-      // if we can do this here because lambdas keep return statements around
+-      // to deduce an implicit return type.
+-      if (FD->getReturnType()->isRecordType() &&
+-          (!getLangOpts().CPlusPlus || !FD->isDependentContext()))
+-        computeNRVO(Body, getCurFunction());
++      // Try to apply the named return value optimization.
++      computeNRVO(Body, getCurFunction());
+     }
+ 
+     // GNU warning -Wmissing-prototypes:
+diff --git a/lib/Sema/SemaExpr.cpp b/lib/Sema/SemaExpr.cpp
+index aeedd6b169..220d690695 100644
+--- a/src/clang/lib/Sema/SemaExpr.cpp
++++ b/src/clang/lib/Sema/SemaExpr.cpp
+@@ -13385,13 +13385,9 @@ ExprResult Sema::ActOnBlockStmtExpr(SourceLocation CaretLoc,
+   if (Body && getCurFunction()->HasPotentialAvailabilityViolations)
+     DiagnoseUnguardedAvailabilityViolations(BSI->TheDecl);
+ 
+-  // Try to apply the named return value optimization. We have to check again
+-  // if we can do this, though, because blocks keep return statements around
+-  // to deduce an implicit return type.
+-  if (getLangOpts().CPlusPlus && RetTy->isRecordType() &&
+-      !BSI->TheDecl->isDependentContext())
+-    computeNRVO(Body, BSI);
+-  
++  // Try to apply the named return value optimization.
++  computeNRVO(Body, BSI);
++
+   BlockExpr *Result = new (Context) BlockExpr(BSI->TheDecl, BlockTy);
+   AnalysisBasedWarnings::Policy WP = AnalysisWarnings.getDefaultPolicy();
+   PopFunctionScopeInfo(&WP, Result->getBlockDecl(), Result);
+diff --git a/lib/Sema/SemaStmt.cpp b/lib/Sema/SemaStmt.cpp
+index ccf25ee9eb..04f5114510 100644
+--- a/src/clang/lib/Sema/SemaStmt.cpp
++++ b/src/clang/lib/Sema/SemaStmt.cpp
+@@ -3455,12 +3455,9 @@ Sema::ActOnReturnStmt(SourceLocation ReturnLoc, Expr *RetValExp,
+                            ExpressionEvaluationContext::DiscardedStatement)
+     return R;
+ 
+-  if (VarDecl *VD =
+-      const_cast<VarDecl*>(cast<ReturnStmt>(R.get())->getNRVOCandidate())) {
+-    CurScope->addNRVOCandidate(VD);
+-  } else {
+-    CurScope->setNoNRVO();
+-  }
++  VarDecl *VD =
++      const_cast<VarDecl*>(cast<ReturnStmt>(R.get())->getNRVOCandidate());
++  CurScope->setNRVOCandidate(VD);
+ 
+   CheckJumpOutOfSEHFinally(*this, ReturnLoc, *CurScope->getFnParent());
+ 
+diff --git a/lib/Sema/SemaTemplateInstantiateDecl.cpp b/lib/Sema/SemaTemplateInstantiateDecl.cpp
+index dd62d4c98f..2f2a145b94 100644
+--- a/src/clang/lib/Sema/SemaTemplateInstantiateDecl.cpp
++++ b/src/clang/lib/Sema/SemaTemplateInstantiateDecl.cpp
+@@ -740,12 +740,13 @@ Decl *TemplateDeclInstantiator::VisitVarDecl(VarDecl *D,
+   SemaRef.BuildVariableInstantiation(Var, D, TemplateArgs, LateAttrs, Owner,
+                                      StartingScope, InstantiatingVarTemplate);
+ 
++  bool NRVO = false;
+   if (D->isNRVOVariable()) {
+     QualType ReturnType = cast<FunctionDecl>(DC)->getReturnType();
+     if (SemaRef.isCopyElisionCandidate(ReturnType, Var, Sema::CES_Strict))
+-      Var->setNRVOVariable(true);
++      NRVO = true;
+   }
+-
++  Var->setNRVOVariable(NRVO);
+   Var->setImplicit(D->isImplicit());
+ 
+   return Var;
+diff --git a/lib/Serialization/ASTReaderDecl.cpp b/lib/Serialization/ASTReaderDecl.cpp
+index a1ce26d27c..699a98ce4f 100644
+--- a/src/clang/lib/Serialization/ASTReaderDecl.cpp
++++ b/src/clang/lib/Serialization/ASTReaderDecl.cpp
+@@ -1326,7 +1326,7 @@ ASTDeclReader::RedeclarableResult ASTDeclReader::VisitVarDeclImpl(VarDecl *VD) {
+     VD->NonParmVarDeclBits.IsThisDeclarationADemotedDefinition =
+         Record.readInt();
+     VD->NonParmVarDeclBits.ExceptionVar = Record.readInt();
+-    VD->NonParmVarDeclBits.NRVOVariable = Record.readInt();
++    VD->NonParmVarDeclBits.NRVOMode = Record.readInt();
+     VD->NonParmVarDeclBits.CXXForRangeDecl = Record.readInt();
+     VD->NonParmVarDeclBits.ObjCForDecl = Record.readInt();
+     VD->NonParmVarDeclBits.ARCPseudoStrong = Record.readInt();
+diff --git a/lib/Serialization/ASTWriterDecl.cpp b/lib/Serialization/ASTWriterDecl.cpp
+index cf35a2bc1f..c1f983e5ce 100644
+--- a/src/clang/lib/Serialization/ASTWriterDecl.cpp
++++ b/src/clang/lib/Serialization/ASTWriterDecl.cpp
+@@ -918,7 +918,7 @@ void ASTDeclWriter::VisitVarDecl(VarDecl *D) {
+   if (!isa<ParmVarDecl>(D)) {
+     Record.push_back(D->isThisDeclarationADemotedDefinition());
+     Record.push_back(D->isExceptionVariable());
+-    Record.push_back(D->isNRVOVariable());
++    Record.push_back(D->getNRVOMode());
+     Record.push_back(D->isCXXForRangeDecl());
+     Record.push_back(D->isObjCForDecl());
+     Record.push_back(D->isARCPseudoStrong());
+@@ -2031,7 +2031,7 @@ void ASTWriter::WriteDeclAbbrevs() {
+   Abv->Add(BitCodeAbbrevOp(BitCodeAbbrevOp::Fixed, 2)); // InitStyle
+   Abv->Add(BitCodeAbbrevOp(BitCodeAbbrevOp::Fixed, 1)); // IsThisDeclarationADemotedDefinition
+   Abv->Add(BitCodeAbbrevOp(BitCodeAbbrevOp::Fixed, 1)); // isExceptionVariable
+-  Abv->Add(BitCodeAbbrevOp(BitCodeAbbrevOp::Fixed, 1)); // isNRVOVariable
++  Abv->Add(BitCodeAbbrevOp(BitCodeAbbrevOp::Fixed, 2)); // NRVOMode
+   Abv->Add(BitCodeAbbrevOp(BitCodeAbbrevOp::Fixed, 1)); // isCXXForRangeDecl
+   Abv->Add(BitCodeAbbrevOp(BitCodeAbbrevOp::Fixed, 1)); // isObjCForDecl
+   Abv->Add(BitCodeAbbrevOp(BitCodeAbbrevOp::Fixed, 1)); // isARCPseudoStrong
+diff --git a/test/CodeGenCXX/nrvo-noopt.cpp b/test/CodeGenCXX/nrvo-noopt.cpp
+new file mode 100644
+index 0000000000..09e7074953
+--- /dev/null
++++ b/src/clang/test/CodeGenCXX/nrvo-noopt.cpp
+@@ -0,0 +1,58 @@
++// RUN: %clang_cc1 -emit-llvm -O0 -o - %s | FileCheck %s
++
++struct X {
++  X();
++  X(X&&);
++};
++
++// CHECK-LABEL: define void @_Z7test_00b
++X test_00(bool b) {
++  if (b) {
++    // CHECK-NOT: call void @_ZN1XC1EOS_
++    // CHECK: call void @_ZN1XC1Ev
++    // CHECK-NEXT: br label %return
++    X x;
++    return x;
++  } else {
++    // CHECK-NOT: call void @_ZN1XC1EOS_
++    // CHECK: call void @_ZN1XC1Ev
++    // CHECK-NEXT: br label %return
++    X x;
++    return x;
++  }
++}
++
++// CHECK-LABEL: define void @_Z7test_01b
++X test_01(bool b) {
++  if (b) {
++    // CHECK-NOT: call void @_ZN1XC1EOS_
++    // CHECK: call void @_ZN1XC1Ev
++    // CHECK-NEXT: br label %return
++    X x;
++    return x;
++  }
++  // CHECK-NOT: call void @_ZN1XC1EOS_
++  // CHECK: call void @_ZN1XC1Ev
++  // CHECK-NEXT: br label %return
++  X x;
++  return x;
++}
++
++// CHECK-LABEL: define void @_Z7test_02b
++X test_02(bool b) {
++  // CHECK: call void @_ZN1XC1Ev
++  X x;
++
++  if (b) {
++    // CHECK-NOT: call void @_ZN1XC1EOS_
++    // CHECK: call void @_ZN1XC1Ev
++    // CHECK-NEXT: br label %return
++    X y;
++    return y;
++  }
++
++  // CHECK-NOT: call void @_ZN1XC1Ev
++  // CHECK: call void @_ZN1XC1EOS_
++  // CHECK-NEXT: br label %return
++  return x;
++}
+diff --git a/test/CodeGenCXX/nrvo.cpp b/test/CodeGenCXX/nrvo.cpp
+index 0f359b9c90..1da4308e26 100644
+--- a/src/clang/test/CodeGenCXX/nrvo.cpp
++++ b/src/clang/test/CodeGenCXX/nrvo.cpp
+@@ -130,17 +130,13 @@ X test2(bool B) {
+ }
+ 
+ // CHECK-LABEL: define void @_Z5test3b
+-X test3(bool B) {
++X test3(bool B, X x) {
+   // CHECK: tail call {{.*}} @_ZN1XC1Ev
+-  // CHECK-NOT: call {{.*}} @_ZN1XC1ERKS_
+-  // CHECK: call {{.*}} @_ZN1XC1Ev
+-  // CHECK: call {{.*}} @_ZN1XC1ERKS_
+   if (B) {
+     X y;
+     return y;
+   }
+-  // FIXME: we should NRVO this variable too.
+-  X x;
++  // CHECK: tail call {{.*}} @_ZN1XC1ERKS_
+   return x;
+ }
+ 
+@@ -191,9 +187,13 @@ X test6() {
+ }
+ 
+ // CHECK-LABEL: define void @_Z5test7b
++// CHECK-EH-LABEL: define void @_Z5test7b
+ X test7(bool b) {
+   // CHECK: tail call {{.*}} @_ZN1XC1Ev
+   // CHECK-NEXT: ret
++
++  // CHECK-EH: tail call {{.*}} @_ZN1XC1Ev
++  // CHECK-EH-NEXT: ret
+   if (b) {
+     X x;
+     return x;
+@@ -202,10 +202,14 @@ X test7(bool b) {
+ }
+ 
+ // CHECK-LABEL: define void @_Z5test8b
++// CHECK-EH-LABEL: define void @_Z5test8b
+ X test8(bool b) {
+   // CHECK: tail call {{.*}} @_ZN1XC1Ev
+   // CHECK-NEXT: ret
+-  if (b) {
++
++  // CHECK-EH: tail call {{.*}} @_ZN1XC1Ev
++  // CHECK-EH-NEXT: ret
++if (b) {
+     X x;
+     return x;
+   } else {
+@@ -221,4 +225,37 @@ Y<int> test9() {
+ // CHECK-LABEL: define linkonce_odr void @_ZN1YIiE1fEv
+ // CHECK: tail call {{.*}} @_ZN1YIiEC1Ev
+ 
++// CHECK-LABEL: define void @_Z6test10b
++X test10(bool B, X x) {
++  if (B) {
++    // CHECK: tail call {{.*}} @_ZN1XC1ERKS_
++    // CHECK-EH: tail call {{.*}} @_ZN1XC1ERKS_
++    return x;
++  }
++  // CHECK: tail call {{.*}} @_ZN1XC1Ev
++  // CHECK-NOT: call {{.*}} @_ZN1XC1ERKS_
++
++  // CHECK-EH: tail call {{.*}} @_ZN1XC1Ev
++  // CHECK-EH-NOT: call {{.*}} @_ZN1XC1ERKS_
++  X y;
++  return y;
++}
++
++// CHECK-LABEL: define {{.*}} void @_Z6test11I1XET_v
++// CHECK-EH-LABEL: define {{.*}} void @_Z6test11I1XET_v
++template <typename T>
++T test11() {
++  // CHECK:      tail call {{.*}} @_ZN1XC1Ev
++  // CHECK-NEXT: ret void
++
++  // CHECK-EH:      tail call {{.*}} @_ZN1XC1Ev
++  // CHECK-EH-NEXT: ret void
++  T t;
++  return t;
++}
++
++void test12() {
++  test11<X>();
++}
++
+ // CHECK-EH-03: attributes [[NR_NUW]] = { noreturn nounwind }
+diff --git a/test/SemaCXX/nrvo-ast.cpp b/test/SemaCXX/nrvo-ast.cpp
+new file mode 100644
+index 0000000000..63fac006e2
+--- /dev/null
++++ b/src/clang/test/SemaCXX/nrvo-ast.cpp
+@@ -0,0 +1,153 @@
++// RUN: %clang_cc1 -fcxx-exceptions -fsyntax-only -ast-dump -o - %s | FileCheck %s
++
++struct X {
++  X();
++  X(const X&);
++  X(X&&);
++};
++
++// CHECK-LABEL: FunctionDecl {{.*}} test_00
++X test_00() {
++  // CHECK: VarDecl {{.*}} x {{.*}} nrvo
++  X x;
++  return x;
++}
++
++// CHECK-LABEL: FunctionDecl {{.*}} test_01
++X test_01(bool b) {
++  // CHECK: VarDecl {{.*}} x {{.*}} nrvo
++  X x;
++  if (b)
++    return x;
++  return x;
++}
++
++// CHECK-LABEL: FunctionDecl {{.*}} test_02
++X test_02(bool b) {
++  // CHECK-NOT: VarDecl {{.*}} x {{.*}} nrvo
++  X x;
++  // CHECK-NOT: VarDecl {{.*}} y {{.*}} nrvo
++  X y;
++  if (b)
++    return y;
++  return x;
++}
++
++// CHECK-LABEL: FunctionDecl {{.*}} test_03
++X test_03(bool b) {
++  if (b) {
++    // CHECK: VarDecl {{.*}} y {{.*}} nrvo
++    X y;
++    return y;
++  }
++  // CHECK: VarDecl {{.*}} x {{.*}} nrvo
++  X x;
++  return x;
++}
++
++extern "C" _Noreturn void exit(int) throw();
++
++// CHECK-LABEL: FunctionDecl {{.*}} test_04
++X test_04(bool b) {
++  {
++    // CHECK: VarDecl {{.*}} x {{.*}} nrvo
++    X x;
++    if (b)
++      return x;
++  }
++  exit(1);
++}
++
++void may_throw();
++// CHECK-LABEL: FunctionDecl {{.*}} test_05
++X test_05() {
++  try {
++    may_throw();
++    return X();
++  } catch (X x) {
++    // CHECK-NOT: VarDecl {{.*}} x {{.*}} nrvo
++    return x;
++  }
++}
++
++// CHECK-LABEL: FunctionDecl {{.*}} test_06
++X test_06() {
++  // CHECK-NOT: VarDecl {{.*}} x {{.*}} nrvo
++  X x __attribute__((aligned(8)));
++  return x;
++}
++
++// CHECK-LABEL: FunctionDecl {{.*}} test_07
++X test_07(bool b) {
++  if (b) {
++    // CHECK: VarDecl {{.*}} x {{.*}} nrvo
++    X x;
++    return x;
++  }
++  return X();
++}
++
++// CHECK-LABEL: FunctionDecl {{.*}} test_08
++X test_08(bool b) {
++  if (b) {
++    // CHECK: VarDecl {{.*}} x {{.*}} nrvo
++    X x;
++    return x;
++  } else {
++    // CHECK: VarDecl {{.*}} y {{.*}} nrvo
++    X y;
++    return y;
++  }
++}
++
++template <typename T>
++struct Y {
++  Y();
++  // CHECK-LABEL: CXXMethodDecl {{.*}} test_09 'Y<T> ()'
++  // CHECK: VarDecl {{.*}} y 'Y<T>' nrvo
++
++  // CHECK-LABEL: CXXMethodDecl {{.*}} test_09 'Y<int> ()'
++  // CHECK: VarDecl {{.*}} y 'Y<int>' nrvo
++  static Y test_09() {
++    Y y;
++    return y;
++  }
++};
++
++struct Z {
++  Z(const X&);
++};
++
++// CHECK-LABEL: FunctionDecl {{.*}} test_10 'A ()'
++// CHECK: VarDecl {{.*}} b 'B' nrvo
++
++// CHECK-LABEL: FunctionDecl {{.*}} test_10 'X ()'
++// CHECK: VarDecl {{.*}} b {{.*}} nrvo
++
++// CHECK-LABEL: FunctionDecl {{.*}} test_10 'Z ()'
++// CHECK-NOT: VarDecl {{.*}} b {{.*}} nrvo
++template <typename A, typename B>
++A test_10() {
++  B b;
++  return b;
++}
++
++// CHECK-LABEL: FunctionDecl {{.*}} test_11 'A (bool)'
++// CHECK-NOT: VarDecl {{.*}} a {{.*}} nrvo
++
++// CHECK-LABEL: FunctionDecl {{.*}} test_11 'X (bool)'
++// CHECK-NOT: VarDecl {{.*}} a {{.*}} nrvo
++template <typename A>
++A test_11(bool b) {
++  A a;
++  if (b)
++    return A();
++  return a;
++}
++
++void instantiate() {
++  Y<int>::test_09();
++  test_10<X, X>();
++  test_10<Z, X>();
++  test_11<X>(true);
++}
